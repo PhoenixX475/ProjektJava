@@ -18,4 +18,9 @@ public class Coordinates {
         this.x = random.nextInt();
         this.y = random.nextInt();
     }
+
+    public Coordinates(int x,int y) {
+        this.x = x;
+        this.y = y;
+    }
 }

@@ -20,38 +20,56 @@ public abstract class Mrowka {
 
 
 
-    public Mrowka(int hp, double damage) {
+    public Mrowka(int hp, double damage, int x,int y) {
         this.hp = hp;
         this.damage = damage;
         this.fights = null;
-        this.coordinates = new Coordinates();
+        this.coordinates = new Coordinates(x,y);
     }
 
     // Metody odpowiedzialne za zadawanie i otrzymywanie obrażeń przez mrówki
     public double getDamage() {
         return damage;
     }
-    public void setDamage(double dmg) {
+    public void dealDamage(double dmg) {
         hp -= dmg;
     }
 
 
-    public void randomMove() {
+    public Coordinates randomMove() {
         // Losujemy zmianę pozycji mrówki o jedną jednostkę na każdej osi
         coordinates.x += randomMoveX.nextInt()%3 - 1;
         coordinates.y += randomMoveY.nextInt()%3 - 1;
+
+
+        return coordinates;
     }
 
 
     public void checkEnemy() {
         // Znów trzeba zrobić listę wszystkich obiektów jakie są przechowywane na mapie
         // sprawdzamy koordynaty wokół mrówki ( pole 3x3 ) i jak tak to przypisujemy fights = przeciwinik
+
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++)
+            {
+                int x = coordinates.x - 1 + j;
+                int y = coordinates.y - 1 + i;
+
+                //Pole pole = map[x][y];
+
+                //switch(pole){
+                  //  case pole.typ = mrówka {
+
+                    //}
+                //}
+
+            }
+        }
+
     }
 
 
-    public void checkNearMrowisko() {
-
-    }
 
     public void returnToMrowisko() {
        while(true) {

@@ -1,5 +1,7 @@
 package logic.mrowki;
 
+import logic.rozne.Coordinates;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +19,10 @@ public class Mrowisko {
     private int antCount;
     private int antMax;
     public List<Mrowka> mrowki;
+    public Coordinates coordinates;
 
-
-    public Mrowisko(int id) {
-        this.id = id;
+    public Mrowisko(int x, int y) {
+        //this.id = id;
         this.level = 1;
         this.durability = 100;
         this.stickCount = 0;
@@ -30,6 +32,7 @@ public class Mrowisko {
         this.antCount = 0;
         this.antMax = 5;
         this.mrowki = new ArrayList<>();
+        this.coordinates = new Coordinates(x,y);
     }
 
 
@@ -70,12 +73,16 @@ public class Mrowisko {
 
     public void createAnt() {
         if(antCount < antMax) {
-            Robotnica nowaRobotnica = new Robotnica();
+            Robotnica nowaRobotnica = new Robotnica(coordinates.x, coordinates.y);
             antCount++;
             mrowki.add(nowaRobotnica);
-            System.out.println("Dodano mrowke do mrowiska " + antCount);
+            //System.out.println("Dodano mrowke do mrowiska " + antCount);
+
+
         }
     }
+
+
 
     public void destroyMrowisko() {
         // usuwamy mrowisko z listy która przechowywa wszystkie mrowiska znajdujące się na mapie

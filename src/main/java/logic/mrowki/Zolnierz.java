@@ -6,14 +6,14 @@ public class Zolnierz extends Mrowka{
 
     public List<Mrowka> fights;
 
-    public Zolnierz() {
-        super(30,8);
+    public Zolnierz(int x, int y) {
+        super(30,8,x,y);
     }
 
 
     // Zolnierz zadaje obrażenia obszarowe
     @Override
-    public void setDamage(double dmg) {
+    public void dealDamage(double dmg) {
         for(Mrowka m: fights) {
             m.hp -= dmg;
         }

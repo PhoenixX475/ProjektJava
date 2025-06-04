@@ -14,8 +14,8 @@ public class Robotnica extends Mrowka {
     protected Przedmiot holding;
 
 
-    public Robotnica() {
-        super(10,3);
+    public Robotnica(int x, int y) {
+        super(10,3,x,y);
         this.holding = null;
     }
 
