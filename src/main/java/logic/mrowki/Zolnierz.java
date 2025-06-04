@@ -1,5 +1,6 @@
 package logic.mrowki;
 
+import java.awt.*;
 import java.util.List;
 
 public class Zolnierz extends Mrowka{
@@ -19,4 +20,14 @@ public class Zolnierz extends Mrowka{
         }
     }
 
+    @Override
+    public void drawObject(Graphics g, int rozmiarPola) {
+        g.setColor(Color.BLACK);
+        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 2, rozmiarPola * 2 );
+    }
+
+    @Override
+    public void update( ) {
+        randomMove();
+    }
 }

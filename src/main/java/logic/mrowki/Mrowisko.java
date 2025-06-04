@@ -1,38 +1,44 @@
 package logic.mrowki;
 
+import graphics.MapaPanel;
 import logic.rozne.Coordinates;
+import logic.rozne.ObiektMapy;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
-public class Mrowisko {
+public class Mrowisko extends ObiektMapy {
     // Pola dotyczące samego mrowiska
     public int id;
     private int level;
     private int durability;
     public int stickCount;
     public int foodCount;
-
+    private MapaPanel mapa;
 
     // Pola dotyczące mrówek danego mrowiska
     private int antCount;
     private int antMax;
     public List<Mrowka> mrowki;
-    public Coordinates coordinates;
+    //public Coordinates coordinates;
 
-    public Mrowisko(int x, int y) {
+    public Mrowisko(int x, int y, MapaPanel mapa) {
+        super(x,y,3,3);
+
         //this.id = id;
         this.level = 1;
         this.durability = 100;
         this.stickCount = 0;
         this.foodCount = 30;
 
-
+        this.mapa = mapa;
         this.antCount = 0;
         this.antMax = 5;
         this.mrowki = new ArrayList<>();
-        this.coordinates = new Coordinates(x,y);
+        //this.coordinates = new Coordinates(x,y);
     }
 
 
@@ -71,16 +77,34 @@ public class Mrowisko {
 
 
 
-    public void createAnt() {
+    public void createAnt(MapaPanel mapa) {
         if(antCount < antMax) {
-            Robotnica nowaRobotnica = new Robotnica(coordinates.x, coordinates.y);
+
+            // losowanie miejsca gdzie mrówka się zespawni
+            Random rnd = new Random();
+            int rndX = (rnd.nextInt(3) -1 )*2;
+            int rndY = (rnd.nextInt(3) - 1 )*2;
+
+
+            // Zolnierz ma 1/5 szansy na stworzenie
+            if(rnd.nextInt(5) == 0) {
+                Zolnierz nowyZolnierz = new Zolnierz(x+rndX,y+rndY);
+                mrowki.add(nowyZolnierz);
+                mapa.listaObiektow.add(nowyZolnierz);
+
+            }
+            else {
+                Robotnica nowaRobotnica = new Robotnica(x+rndX,y+rndY);
+                mrowki.add(nowaRobotnica);
+                mapa.listaObiektow.add(nowaRobotnica);
+            }
+
             antCount++;
-            mrowki.add(nowaRobotnica);
-            //System.out.println("Dodano mrowke do mrowiska " + antCount);
 
 
         }
     }
+//System.out.println("Dodano mrowke do mrowiska " + antCount);
 
 
 
@@ -112,6 +136,17 @@ public class Mrowisko {
 
 
 
+    public void drawObject(Graphics g, int rozmiarPola ) {
+        g.setColor(Color.RED);
+        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5, rozmiarPola * 5 );
+    }
+
+    public void update() {
+        for(Mrowka m: mrowki) {
+            m.update();
+        }
+        foodDrain();
+    }
 
 }
 

@@ -1,12 +1,15 @@
 package logic.mrowki;
 import logic.rozne.Coordinates;
+import logic.rozne.ObiektMapy;
+
+import java.awt.*;
 import java.util.Random;
 
 /**
  * Bazowa klasa dla mrówek*/
 
 
-public abstract class Mrowka {
+public abstract class Mrowka extends ObiektMapy {
     // Pola mrówki
     protected int hp;  // Punkty życia mrówki jak 0 to umiera
     protected double damage;
@@ -21,10 +24,11 @@ public abstract class Mrowka {
 
 
     public Mrowka(int hp, double damage, int x,int y) {
+        super(x,y);
         this.hp = hp;
         this.damage = damage;
         this.fights = null;
-        this.coordinates = new Coordinates(x,y);
+        //this.coordinates = new Coordinates(x,y);
     }
 
     // Metody odpowiedzialne za zadawanie i otrzymywanie obrażeń przez mrówki
@@ -36,13 +40,14 @@ public abstract class Mrowka {
     }
 
 
-    public Coordinates randomMove() {
+    public void randomMove() {
         // Losujemy zmianę pozycji mrówki o jedną jednostkę na każdej osi
-        coordinates.x += randomMoveX.nextInt()%3 - 1;
-        coordinates.y += randomMoveY.nextInt()%3 - 1;
-
-
-        return coordinates;
+        x += randomMoveX.nextInt(3) - 1;
+        y += randomMoveY.nextInt(3) - 1;
+        if(x<0) x=1;
+        if(x>100) x=99;
+        if(y<0) y=1;
+        if(y>100) y=99;
     }
 
 
@@ -82,5 +87,6 @@ public abstract class Mrowka {
     public int getHp() {
         return hp;
     }
+
 
 }

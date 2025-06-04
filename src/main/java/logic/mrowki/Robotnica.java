@@ -1,9 +1,11 @@
 package logic.mrowki;
+import graphics.MapaPanel;
 import logic.obiekty.*;
 
+import java.awt.*;
 import java.util.List;
 
-/**Robotnica jest odpowiedzialna za podnoszenie przedmitów i przenoszenie ich do Mrowiska
+/**Robotnica jest odpowiedzialna za podnoszenie przedmiotów i przenoszenie ich do Mrowiska
  * W celu utrzymania go
  */
 
@@ -34,6 +36,17 @@ public class Robotnica extends Mrowka {
 
             }
         }*/
+    }
+
+    @Override
+    public void drawObject(Graphics g, int rozmiarPola ) {
+        g.setColor(Color.BLACK);
+        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola );
+    }
+
+    @Override
+    public void update( ) {
+        randomMove();
     }
 
 }

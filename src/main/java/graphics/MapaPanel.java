@@ -1,12 +1,13 @@
 package graphics;
 
 import logic.mrowki.Mrowisko;
+import logic.rozne.ObiektMapy;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Scanner;
+
 
 public class MapaPanel extends JPanel {
     private final int wiersze = 100;
@@ -16,7 +17,8 @@ public class MapaPanel extends JPanel {
     private final Pole[][] mapa;
     private final Random random = new Random();
 
-    private LinkedList<Mrowisko> listaMrowisk = new LinkedList<>();
+    public LinkedList<Mrowisko> listaMrowisk = new LinkedList<>();
+    public LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
 
 
     public MapaPanel() {
@@ -30,10 +32,20 @@ public class MapaPanel extends JPanel {
             }
         }
 
+        Timer timer = new Timer(100, e -> {
+           for (ObiektMapy obj : listaObiektow) {
+               obj.update();
+           }
+           repaint();
+        });
+        timer.start();
+
+
+
         // Losowe rozmieszczenie obiektów
-        losujObiekty(TypObiektu.MROWISKO, 5);
-        losujObiekty(TypObiektu.LISC, 20);
-        losujObiekty(TypObiektu.PATYK, 20);
+        //losujObiekty(TypObiektu.MROWISKO, 5);
+        //losujObiekty(TypObiektu.LISC, 20);
+        //losujObiekty(TypObiektu.PATYK, 20);
     }
 
     // Metoda, która losowo rozmieszcza obiekty na mapie
@@ -45,30 +57,18 @@ public class MapaPanel extends JPanel {
             int x = random.nextInt(kolumny-2);
             int y = random.nextInt(wiersze-2);
 
-            // Sprawdzamy, czy pole, które wybraliśmy jest puste
-            boolean wolne = true;
-            for(int i = 0; i<3;i++) {
-                for(int j = 0;j<3;j++) {
-                    if (mapa[y+i][x+j].typ != TypObiektu.PUSTE) {
-                        wolne = false;
-                    }
-                }
-            }
-
-            // Jeśli puste to stawiamy tam obiekt
-            if(wolne && typ == TypObiektu.MROWISKO) {
-                for(int i = 0;i<3;i++) {
-                    for(int j = 0;j<3;j++) {
-                        mapa[y+i][x+j].typ = typ;
-                        listaMrowisk.add(new Mrowisko (x+1,y+1));
-                    }
-                }
-            }
-            else{
-                mapa[y][x].typ = typ;
-            }
+            dodajObiekt(typ,x,y);
             dodane++;
 
+        }
+    }
+
+    public void dodajObiekt(TypObiektu typ, int x, int y) {
+        // Sprawdzamy, czy pole, które wybraliśmy jest puste
+        if (x >= 0 && x < kolumny && y >= 0 && y < wiersze) {
+            if (mapa[y][x].typ == TypObiektu.PUSTE) {
+                mapa[y][x].typ = typ;
+            }
         }
     }
 
@@ -84,12 +84,16 @@ public class MapaPanel extends JPanel {
                 switch (typ) {
                     case PUSTE -> g.setColor(Color.LIGHT_GRAY);
                     case MROWISKO -> g.setColor(Color.RED.darker());
-                    case MROWKA -> g.setColor(Color.RED);
+                    case MROWKA -> g.setColor(Color.BLACK);
                     case LISC -> g.setColor(Color.GREEN.darker());
                     case PATYK -> g.setColor(new Color(139, 69, 19)); // brązowy
                 }
 
                 g.fillRect(x * rozmiarPola, y * rozmiarPola, rozmiarPola, rozmiarPola);
+
+                for (ObiektMapy obj : listaObiektow) {
+                    obj.drawObject(g, rozmiarPola);
+                }
             }
         }
     }
