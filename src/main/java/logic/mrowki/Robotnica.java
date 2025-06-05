@@ -1,6 +1,7 @@
 package logic.mrowki;
 import graphics.MapaPanel;
 import logic.obiekty.*;
+import logic.rozne.ObiektMapy;
 
 import java.awt.*;
 import java.util.List;
@@ -47,6 +48,7 @@ public class Robotnica extends Mrowka {
     @Override
     public void update( ) {
         randomMove();
+        checkArea(MapaPanel.listaObiektow);
     }
 
 }

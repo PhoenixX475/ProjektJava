@@ -62,13 +62,14 @@ public class Main {
                 Random random = new Random();
                 int x = random.nextInt(100);
                 int y = random.nextInt(100);
-                if(random.nextInt(2) == 1) mapa.listaObiektow.add(new Lisc(x,y));
+                if(random.nextInt(2) == 1) MapaPanel.listaObiektow.add(new Lisc(x,y));
                 //mapa.dodajObiekt(TypObiektu.LISC,x,y);
-                else mapa.dodajObiekt(TypObiektu.PATYK,x,y);
+                else  MapaPanel.listaObiektow.add(new Patyk(x,y));
 
                 mapa.repaint();
             });
             timer1.start();
+
 
             // Tworzenie mrówek przez mrowiska
             Timer timer2 = new Timer(3000, e -> {

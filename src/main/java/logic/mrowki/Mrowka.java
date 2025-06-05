@@ -1,8 +1,10 @@
 package logic.mrowki;
+import graphics.MapaPanel;
 import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -50,39 +52,23 @@ public abstract class Mrowka extends ObiektMapy {
         if(y>100) y=99;
     }
 
-
-    public void checkEnemy() {
-        // Znów trzeba zrobić listę wszystkich obiektów jakie są przechowywane na mapie
-        // sprawdzamy koordynaty wokół mrówki ( pole 3x3 ) i jak tak to przypisujemy fights = przeciwinik
-
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++)
-            {
-                int x = coordinates.x - 1 + j;
-                int y = coordinates.y - 1 + i;
-
-                //Pole pole = map[x][y];
-
-                //switch(pole){
-                  //  case pole.typ = mrówka {
-
-                    //}
-                //}
-
+    public ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
+        // Dla wszystkich obiektów na mapie
+        for(ObiektMapy obj:listaObiektow) {
+            if(obj instanceof Mrowka) {
+                // Sprawdzamy czy są w polu tej mrówki
+                for(int i = -1; i<2; i++) {
+                    for( int j = -1; j<2; j++) {
+                        if(obj.x == i && obj.y == j) {
+                            System.out.println("Mrowka trafila na "+obj);
+                            return obj;
+                        }
+                    }
+                }
             }
         }
-
+        return null;
     }
-
-
-
-    public void returnToMrowisko() {
-       while(true) {
-
-       }
-    }
-
-
 
     public int getHp() {
         return hp;

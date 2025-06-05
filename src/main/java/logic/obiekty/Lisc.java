@@ -4,9 +4,9 @@ import logic.rozne.ObiektMapy;
 
 import java.awt.*;
 
-public class Lisc extends ObiektMapy {
+public class Lisc extends Przedmiot {
     private int foodContribution; // decyduje ile jeden lisc daje jedzenia (foodCount mrowiska)
-    public boolean onGround; // jeśli true to mrówka może go podnieść
+     // jeśli true to mrówka może go podnieść
 
 
     // Kontruktor domyślny
@@ -16,6 +16,7 @@ public class Lisc extends ObiektMapy {
         this.onGround = true;
     }
 
+    @Override
     public void drawObject(Graphics g, int rozmiarPola) {
         if(onGround) {
             g.setColor(Color.GREEN.darker());
@@ -25,7 +26,8 @@ public class Lisc extends ObiektMapy {
     }
 
     public void update() {
-
     }
+
+
 }
 

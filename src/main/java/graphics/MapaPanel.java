@@ -18,7 +18,7 @@ public class MapaPanel extends JPanel {
     private final Random random = new Random();
 
     public LinkedList<Mrowisko> listaMrowisk = new LinkedList<>();
-    public LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
+    public static LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
 
 
     public MapaPanel() {
@@ -48,6 +48,7 @@ public class MapaPanel extends JPanel {
         //losujObiekty(TypObiektu.PATYK, 20);
     }
 
+    /*
     // Metoda, która losowo rozmieszcza obiekty na mapie
     private void losujObiekty(TypObiektu typ, int ile) {
         int dodane = 0;
@@ -62,6 +63,7 @@ public class MapaPanel extends JPanel {
 
         }
     }
+    */
 
     public void dodajObiekt(TypObiektu typ, int x, int y) {
         // Sprawdzamy, czy pole, które wybraliśmy jest puste
