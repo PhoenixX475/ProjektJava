@@ -138,14 +138,16 @@ public class Mrowisko extends ObiektMapy {
 
     public void drawObject(Graphics g, int rozmiarPola ) {
         g.setColor(Color.RED);
-        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5, rozmiarPola * 5 );
+        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5 + level, rozmiarPola * 5 + level);
     }
 
     public void update() {
+        // aktualizujemy stan dla każdej mrówki
         for(Mrowka m: mrowki) {
             m.update();
         }
-        foodDrain();
+        //foodDrain();
+        levelUp();  // ulepszamy mrowisko jeśli można
     }
 
 }

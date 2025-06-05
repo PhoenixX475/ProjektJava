@@ -3,6 +3,8 @@ import javax.swing.*;
 import graphics.MapaPanel;
 import graphics.TypObiektu;
 import logic.mrowki.*;
+import logic.obiekty.Lisc;
+import logic.obiekty.Patyk;
 
 import java.util.Random;
 import java.util.Scanner;
@@ -15,17 +17,6 @@ import java.util.Scanner;
 /**
  * Wszystkie obiekty zapisz w 2d tablicy i to wyświetlaj na mapę
  * Żeby sprawdzić czy coś jest blisko to z tego weź*/
-
-/*
-public class Main {
-    public static void main(String[] args) {
-        Mrowisko m = new Mrowisko(1);
-        m.createAnt();
-        m.wypiszMrowki();
-
-    }
-}
-*/
 
 
 public class Main {
@@ -53,9 +44,8 @@ public class Main {
             Mrowisko mrowisko = new Mrowisko(50,50, mapa);
             mapa.listaMrowisk.add(mrowisko);
             mapa.listaObiektow.add(mrowisko);
-            mrowisko.levelUp();
-            mrowisko.levelUp();
-            mrowisko.levelUp();
+
+
 
             Mrowisko mrowisko1 = new Mrowisko(30,90, mapa);
             mapa.listaMrowisk.add(mrowisko1);
@@ -72,8 +62,8 @@ public class Main {
                 Random random = new Random();
                 int x = random.nextInt(100);
                 int y = random.nextInt(100);
-                if(random.nextInt(2) == 1)
-                mapa.dodajObiekt(TypObiektu.LISC,x,y);
+                if(random.nextInt(2) == 1) mapa.listaObiektow.add(new Lisc(x,y));
+                //mapa.dodajObiekt(TypObiektu.LISC,x,y);
                 else mapa.dodajObiekt(TypObiektu.PATYK,x,y);
 
                 mapa.repaint();
@@ -89,6 +79,12 @@ public class Main {
                 mapa.repaint();
             });
             timer2.start();
+
+            // Przykładowe ulepszanie mrowiska nie pojawi się w końcowej wersji programu
+            Timer timer3 = new Timer(4000, e -> {
+               mrowisko.stickCount += 10;
+            });
+            timer3.start();
 
 
         });
