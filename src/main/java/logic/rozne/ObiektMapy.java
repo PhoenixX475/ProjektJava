@@ -5,12 +5,10 @@ import java.awt.*;
 public abstract class ObiektMapy {
     public int x,y;
     public int width,height = 1;
-    public boolean onMap;
 
     public ObiektMapy(int x,int y) {
         this.x = x;
         this.y = y;
-        this.onMap = true;
     }
 
     // Konstrutkor do tworzenia obiektów większych niż 1x1 ( Mrowisko )
@@ -18,7 +16,6 @@ public abstract class ObiektMapy {
         this(x,y);
         this.width = width;
         this.height = height;
-        this.onMap = true;
     }
 
     public boolean occupied(int dx, int dy) {
