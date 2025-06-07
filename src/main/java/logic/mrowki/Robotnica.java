@@ -4,7 +4,7 @@ import logic.obiekty.*;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.List;
 
 /**Robotnica jest odpowiedzialna za podnoszenie przedmiotów i przenoszenie ich do Mrowiska
  * W celu utrzymania go
@@ -14,21 +14,34 @@ import java.util.Random;
 public class Robotnica extends Mrowka {
 
     // Pola robotnicy
-    public ObiektMapy holding;
+    protected Przedmiot holding;
+    private final Color kolor;
 
 
-    public Robotnica(int x, int y,Mrowisko mrowisko) {
-        super(10,3,x,y,mrowisko);
+    public Robotnica(int x, int y, MapaPanel mapa, Color kolor) {
+        super(10,3,x,y);
         this.holding = null;
-        this.fights = null;
-        this.targeting = null;
+        this.kolor = kolor;
     }
 
+    public void checkPrzedmiotnearby() {
+
+    }
 
     public void grab() {
+        Add comment
+        More actions
+
+
         if (holding == null && targeting instanceof Przedmiot) {
+
+
             if (targeting.x == x && targeting.y == y) {
-                ((Przedmiot)targeting).onMap = false;
+
+
+                ((Przedmiot) targeting).onMap = false;
+
+
                 holding = targeting;
                 targeting = myMrowisko;
                 //System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
@@ -36,55 +49,24 @@ public class Robotnica extends Mrowka {
         }
     }
 
-    public void returnPrzedmiotToMrowisko() {
-        if (holding != null && targeting == myMrowisko) {
-            if (x == myMrowisko.x && y == myMrowisko.y) {
-                if (holding instanceof Lisc) {
-                    myMrowisko.foodCount += Lisc.foodContribution;
-                } else if (holding instanceof Patyk) {
-                    myMrowisko.stickCount += Patyk.upgradeContribution;
-                }
-                holding = null;
-                targeting = null;
-                //System.out.println("Mrowka dodała przedmiot do mrowiska");
-            }
-        }
-    }
+    public void addPrzedmiot() {
+        /*if(holding != null && nearMrowisko == true) {
+            if(holding instanceof Lisc) {
 
+            }
+        }*/
+    }
 
     @Override
     public void drawObject(Graphics g, int rozmiarPola ) {
-        g.setColor(Color.BLACK);
+        g.setColor(kolor);
         g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola );
     }
 
     @Override
-    public void update() {
-
-        // Ruch
-        if (targeting != null) {
-            moveToTarget();
-        } else {
-            randomMove();
-        }
-
-        // Sprawdź obiekty w zasięgu
-        ObiektMapy obj = checkArea(MapaPanel.listaObiektow);
-
-        // Jeśli nic nie trzymamy i nie mamy celu – targetuj przedmiot
-        if (holding == null && targeting == null && obj instanceof Przedmiot) {
-            targeting = obj;
-        }
-
-        // Jeśli trzymamy przedmiot i nie mamy celu – wracamy do mrowiska
-        if (holding != null && targeting == null) {
-            targeting = myMrowisko;
-        }
-
-        grab();
-        returnPrzedmiotToMrowisko();
-
-
+    public void update( ) {
+        randomMove();
+        checkArea(MapaPanel.listaObiektow);
     }
 
 }
