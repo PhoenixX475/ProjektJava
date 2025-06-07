@@ -29,24 +29,8 @@ public class Robotnica extends Mrowka {
     }
 
     public void grab() {
-        Add comment
-        More actions
-
-
-        if (holding == null && targeting instanceof Przedmiot) {
-
-
-            if (targeting.x == x && targeting.y == y) {
-
-
-                ((Przedmiot) targeting).onMap = false;
-
-
-                holding = targeting;
-                targeting = myMrowisko;
-                //System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
-            }
-        }
+        // Jeśli robotnica nic nie trzyma to może podnieść przedmiot
+        if(holding == null) {}
     }
 
     public void addPrzedmiot() {
