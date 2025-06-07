@@ -15,13 +15,15 @@ public class Robotnica extends Mrowka {
 
     // Pola robotnicy
     public ObiektMapy holding;
+    private final Color kolor;
 
 
-    public Robotnica(int x, int y,Mrowisko mrowisko) {
+    public Robotnica(int x, int y,Mrowisko mrowisko,MapaPanel mapa, Color kolor) {
         super(10,3,x,y,mrowisko);
         this.holding = null;
         this.fights = null;
         this.targeting = null;
+        this.kolor = kolor.brighter().brighter();
     }
 
 
@@ -54,7 +56,7 @@ public class Robotnica extends Mrowka {
 
     @Override
     public void drawObject(Graphics g, int rozmiarPola ) {
-        g.setColor(Color.BLACK);
+        g.setColor(kolor);
         g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola );
     }
 

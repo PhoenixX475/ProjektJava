@@ -3,6 +3,8 @@ package graphics;
 import logic.mrowki.Mrowisko;
 import logic.mrowki.Mrowka;
 import logic.mrowki.Robotnica;
+import logic.obiekty.Lisc;
+import logic.obiekty.Patyk;
 import logic.rozne.ObiektMapy;
 
 import javax.swing.*;
@@ -27,7 +29,7 @@ public class MapaPanel extends JPanel {
     public static LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
     public static LinkedList<ObiektMapy> doUsuniecia = new LinkedList<>();
 
-    public MapaPanel() {
+    public MapaPanel(int liczbaMrowisk, int czasMrowki, int czasLisci, int czasPatykow) {
         this.setPreferredSize(new Dimension(kolumny * rozmiarPola, wiersze * rozmiarPola));
 
 
@@ -38,38 +40,99 @@ public class MapaPanel extends JPanel {
             }
         }
 
-        // Aktualizowanie programu
-        Timer timer = new Timer(250, e -> {
-
-                for (ObiektMapy obj : listaObiektow) {
-                    if(obj.onMap) {
-                        obj.update();
-                    }
-                }
-                // Jeśli obiekt już nie powinien być na mapie to dodaj go do listy obiektów do usuniecia
-                for(ObiektMapy o : listaObiektow) {
-                    if(!o.onMap) doUsuniecia.add(o);
-                }
-                // usun te obiekty
-                for(ObiektMapy u : doUsuniecia) {
-                    if(listaObiektow.contains(u)) {
-                        listaObiektow.remove(u);
-                        System.out.println("Usunieto obiekt" + u);
-                    }
-                }
-                doUsuniecia.clear();
-
-
-
-
-
-           repaint();
-        });
-        timer.start();
+        updateMap();
+        spawnAnts(czasMrowki);
+        spawnLisc(czasLisci);
+        spawnPatyk(czasPatykow);
 
     }
 
 
+    public void updateMap() {
+        // Aktualizowanie programu
+        Timer timer = new Timer(250, e -> {
+
+            for (ObiektMapy obj : listaObiektow) {
+                if(obj.onMap) {
+                    obj.update();
+                }
+            }
+            // Jeśli obiekt już nie powinien być na mapie to dodaj go do listy obiektów do usuniecia
+            for(ObiektMapy o : listaObiektow) {
+                if(!o.onMap) doUsuniecia.add(o);
+            }
+            // usun te obiekty
+            for(ObiektMapy u : doUsuniecia) {
+                if(listaObiektow.contains(u)) {
+                    listaObiektow.remove(u);
+                    System.out.println("Usunieto obiekt" + u);
+                }
+            }
+            doUsuniecia.clear();
+
+
+            repaint();
+        });
+        timer.start();
+    }
+    private void spawnAnts(int czasMrowki) {
+        // Timer: tworzenie mrówek
+        Timer mrowkiTimer = new Timer(czasMrowki, e -> {
+            for (Mrowisko m : listaMrowisk) {
+                m.createAnt(this);
+            }
+        });
+        mrowkiTimer.start();
+    }
+    private void spawnLisc(int czasLisci) {
+        Timer liscieTimer = new Timer(czasLisci, e -> {
+            int x = random.nextInt(kolumny);
+            int y = random.nextInt(wiersze);
+
+            if (mapa[y][x].typ == TypObiektu.PUSTE) {
+                Lisc lisc = new Lisc(x, y);
+                listaObiektow.add(lisc);
+                //mapa[y][x].typ = TypObiektu.LISC;
+            }
+
+
+        });
+
+
+        liscieTimer.start();
+    }
+    private void spawnPatyk(int czasPatykow) {
+        Timer patykiTimer = new Timer(czasPatykow, e -> {
+            int x = random.nextInt(kolumny);
+
+
+            int y = random.nextInt(wiersze);
+            if (mapa[y][x].typ == TypObiektu.PUSTE) {
+                Patyk patyk = new Patyk(x, y);
+                listaObiektow.add(patyk);
+                //mapa[y][x].typ = TypObiektu.PATYK;
+
+
+            }
+
+
+        });
+
+
+        patykiTimer.start();
+    }
+
+    public void dodajLosoweMrowiska(int ile){
+        Random r = new Random();
+        for (int i = 0; i < ile; i++) {
+            int x = r.nextInt(90);
+            int y = r.nextInt(90);
+
+            Mrowisko m = new Mrowisko(x, y, this);
+            listaMrowisk.add(m);
+            listaObiektow.add(m);
+        }
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
