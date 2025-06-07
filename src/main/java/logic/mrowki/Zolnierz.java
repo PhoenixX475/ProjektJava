@@ -7,8 +7,8 @@ public class Zolnierz extends Mrowka{
 
     public List<Mrowka> fights;
 
-    public Zolnierz(int x, int y) {
-        super(30,8,x,y);
+    public Zolnierz(int x, int y,Mrowisko mrowisko) {
+        super(30,8,x,y,mrowisko);
     }
 
 

@@ -1,9 +1,9 @@
 package logic.mrowki;
-import graphics.MapaPanel;
 import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
+import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -16,20 +16,23 @@ public abstract class Mrowka extends ObiektMapy {
     protected int hp;  // Punkty życia mrówki jak 0 to umiera
     protected double damage;
     public Mrowka fights;
-    protected Mrowisko myMrowisko;
+    public Mrowisko myMrowisko;
 
     // Pola mrówki odpowiedzialne za położenie na mapie
     public Coordinates coordinates;
     public Random randomMoveX = new Random();
     public Random randomMoveY = new Random();
 
+    public ObiektMapy targeting;
 
 
-    public Mrowka(int hp, double damage, int x,int y) {
+    public Mrowka(int hp, double damage, int x,int y,Mrowisko mrowisko) {
         super(x,y);
         this.hp = hp;
         this.damage = damage;
         this.fights = null;
+        this.myMrowisko = mrowisko;
+        this.targeting = null;
         //this.coordinates = new Coordinates(x,y);
     }
 
@@ -42,33 +45,49 @@ public abstract class Mrowka extends ObiektMapy {
     }
 
 
+    // Losowe poruszanie się mrówek
     public void randomMove() {
         // Losujemy zmianę pozycji mrówki o jedną jednostkę na każdej osi
-        x += randomMoveX.nextInt(3) - 1;
-        y += randomMoveY.nextInt(3) - 1;
-        if(x<0) x=1;
-        if(x>100) x=99;
-        if(y<0) y=1;
-        if(y>100) y=99;
+        if(targeting == null) {
+            x += randomMoveX.nextInt(3) - 1;
+            y += randomMoveY.nextInt(3) - 1;
+
+            if(x<0) x=1;
+            if(x>100) x=99;
+            if(y<0) y=1;
+            if(y>100) y=99;
+
+        }
+
     }
 
+
+    public void moveToTarget() {
+        if (targeting == null) return;
+
+        int dx = Integer.compare(targeting.x, this.x);
+        int dy = Integer.compare(targeting.y, this.y);
+
+        // Przesuwamy tylko o 1 krok w danym kierunku
+        this.x += dx;
+        this.y += dy;
+    }
+
+
+
     public ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
-        // Dla wszystkich obiektów na mapie
-        for(ObiektMapy obj:listaObiektow) {
-            if(obj instanceof Mrowka) {
-                // Sprawdzamy czy są w polu tej mrówki
-                for(int i = -1; i<2; i++) {
-                    for( int j = -1; j<2; j++) {
-                        if(obj.x == i && obj.y == j) {
-                            System.out.println("Mrowka trafila na "+obj);
-                            return obj;
-                        }
-                    }
-                }
+        for (ObiektMapy obj : listaObiektow) {
+            if (obj == this) continue; // pomiń samą siebie
+            if (!obj.onMap) continue;  // pomiń obiekty, które już zostały zabrane
+            // Sprawdź zasięg 3x3 (lub większy)
+            if(obj == this.myMrowisko) continue;
+            if (Math.abs(obj.x - this.x) <= 5 && Math.abs(obj.y - this.y) <= 5) {
+                return obj;
             }
         }
         return null;
     }
+
 
     public int getHp() {
         return hp;

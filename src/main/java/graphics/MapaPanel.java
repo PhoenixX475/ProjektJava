@@ -1,29 +1,35 @@
 package graphics;
 
 import logic.mrowki.Mrowisko;
+import logic.mrowki.Mrowka;
+import logic.mrowki.Robotnica;
 import logic.rozne.ObiektMapy;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.ObjectStreamException;
 import java.util.LinkedList;
 import java.util.Random;
 
 
 public class MapaPanel extends JPanel {
-    private final int wiersze = 100;
-    private final int kolumny = 100;
-    private final int rozmiarPola = 6;
 
-    private final Pole[][] mapa;
+    // Pola odpowiedzialne za budowę mapy
+    private static final int wiersze = 100;
+    private static final int kolumny = 100;
+    private final int rozmiarPola = 6;
+    private static final Pole[][] mapa = new Pole[wiersze][kolumny];
+
     private final Random random = new Random();
 
-    public LinkedList<Mrowisko> listaMrowisk = new LinkedList<>();
+    // Listy przechowujące obiekty używane w symulacji
+    public static LinkedList<Mrowisko> listaMrowisk = new LinkedList<>();
     public static LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
-
+    public static LinkedList<ObiektMapy> doUsuniecia = new LinkedList<>();
 
     public MapaPanel() {
         this.setPreferredSize(new Dimension(kolumny * rozmiarPola, wiersze * rozmiarPola));
-        mapa = new Pole[wiersze][kolumny];
+
 
         // Inicjalizacja mapy: puste pola
         for (int y = 0; y < wiersze; y++) {
@@ -32,47 +38,38 @@ public class MapaPanel extends JPanel {
             }
         }
 
-        Timer timer = new Timer(100, e -> {
-           for (ObiektMapy obj : listaObiektow) {
-               obj.update();
-           }
+        // Aktualizowanie programu
+        Timer timer = new Timer(250, e -> {
+
+                for (ObiektMapy obj : listaObiektow) {
+                    if(obj.onMap) {
+                        obj.update();
+                    }
+                }
+                // Jeśli obiekt już nie powinien być na mapie to dodaj go do listy obiektów do usuniecia
+                for(ObiektMapy o : listaObiektow) {
+                    if(!o.onMap) doUsuniecia.add(o);
+                }
+                // usun te obiekty
+                for(ObiektMapy u : doUsuniecia) {
+                    if(listaObiektow.contains(u)) {
+                        listaObiektow.remove(u);
+                        System.out.println("Usunieto obiekt" + u);
+                    }
+                }
+                doUsuniecia.clear();
+
+
+
+
+
            repaint();
         });
         timer.start();
 
-
-
-        // Losowe rozmieszczenie obiektów
-        //losujObiekty(TypObiektu.MROWISKO, 5);
-        //losujObiekty(TypObiektu.LISC, 20);
-        //losujObiekty(TypObiektu.PATYK, 20);
     }
 
-    /*
-    // Metoda, która losowo rozmieszcza obiekty na mapie
-    private void losujObiekty(TypObiektu typ, int ile) {
-        int dodane = 0;
-        while (dodane < ile) {
 
-            // Wybieramy losowe współrzędne
-            int x = random.nextInt(kolumny-2);
-            int y = random.nextInt(wiersze-2);
-
-            dodajObiekt(typ,x,y);
-            dodane++;
-
-        }
-    }
-    */
-
-    public void dodajObiekt(TypObiektu typ, int x, int y) {
-        // Sprawdzamy, czy pole, które wybraliśmy jest puste
-        if (x >= 0 && x < kolumny && y >= 0 && y < wiersze) {
-            if (mapa[y][x].typ == TypObiektu.PUSTE) {
-                mapa[y][x].typ = typ;
-            }
-        }
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -94,7 +91,9 @@ public class MapaPanel extends JPanel {
                 g.fillRect(x * rozmiarPola, y * rozmiarPola, rozmiarPola, rozmiarPola);
 
                 for (ObiektMapy obj : listaObiektow) {
-                    obj.drawObject(g, rozmiarPola);
+                    if(obj.onMap) {
+                        obj.drawObject(g, rozmiarPola);
+                    }
                 }
             }
         }

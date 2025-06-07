@@ -21,6 +21,11 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        int n;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("podaj ilosc mrowisk");
+        n = sc.nextInt();
+
         SwingUtilities.invokeLater(() -> {
             // Stworzenie mapy
             JFrame frame = new JFrame("Symulacja Mrowisk");
@@ -41,29 +46,24 @@ public class Main {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            Mrowisko mrowisko = new Mrowisko(50,50, mapa);
-            mapa.listaMrowisk.add(mrowisko);
-            mapa.listaObiektow.add(mrowisko);
-
-
-
-            Mrowisko mrowisko1 = new Mrowisko(30,90, mapa);
-            mapa.listaMrowisk.add(mrowisko1);
-            mapa.listaObiektow.add(mrowisko1);
-            Mrowisko mrowisko2 = new Mrowisko(70,10, mapa);
-            mapa.listaMrowisk.add(mrowisko2);
-            mapa.listaObiektow.add(mrowisko2);
+            // Tworzenie losowo mrowisk na mapie
+            for(int i = 0; i<n;i++) {
+                Random rndX = new Random();
+                Random rndY = new Random();
+                Mrowisko mrowisko = new Mrowisko(rndX.nextInt(90)+5,rndY.nextInt(90)+5,mapa);
+                mapa.listaMrowisk.add(mrowisko);
+                mapa.listaObiektow.add(mrowisko);
+            }
 
 
 
 
             // Tworzenie patyków i liści na mapie
-            Timer timer1 = new Timer(500, e -> {
+            Timer timer1 = new Timer(100, e -> {
                 Random random = new Random();
                 int x = random.nextInt(100);
                 int y = random.nextInt(100);
                 if(random.nextInt(2) == 1) MapaPanel.listaObiektow.add(new Lisc(x,y));
-                //mapa.dodajObiekt(TypObiektu.LISC,x,y);
                 else  MapaPanel.listaObiektow.add(new Patyk(x,y));
 
                 mapa.repaint();
@@ -71,21 +71,20 @@ public class Main {
             timer1.start();
 
 
+            MapaPanel.listaObiektow.add(new Patyk(45,45));
             // Tworzenie mrówek przez mrowiska
-            Timer timer2 = new Timer(3000, e -> {
+            Timer timer2 = new Timer(2500, e -> {
                 for (Mrowisko m : mapa.listaMrowisk) {
-                    m.createAnt(mapa);
-                    m.update();
+                    if (m.onMap) {
+                        m.createAnt(mapa);
+                        m.update();
+                    }
                 }
                 mapa.repaint();
             });
             timer2.start();
 
-            // Przykładowe ulepszanie mrowiska nie pojawi się w końcowej wersji programu
-            Timer timer3 = new Timer(4000, e -> {
-               mrowisko.stickCount += 10;
-            });
-            timer3.start();
+
 
 
         });

@@ -15,6 +15,7 @@ public class Mrowisko extends ObiektMapy {
     public int id;
     private int level;
     private int durability;
+    private int maxDurability;
     public int stickCount;
     public int foodCount;
     private MapaPanel mapa;
@@ -26,17 +27,18 @@ public class Mrowisko extends ObiektMapy {
     //public Coordinates coordinates;
 
     public Mrowisko(int x, int y, MapaPanel mapa) {
-        super(x,y,3,3);
+        super(x,y);
 
         //this.id = id;
         this.level = 1;
-        this.durability = 100;
+        this.durability = 200;
+        this.maxDurability = 200;
         this.stickCount = 0;
-        this.foodCount = 30;
+        this.foodCount = 100;
 
         this.mapa = mapa;
         this.antCount = 0;
-        this.antMax = 5;
+        this.antMax = 3;
         this.mrowki = new ArrayList<>();
         //this.coordinates = new Coordinates(x,y);
     }
@@ -48,17 +50,35 @@ public class Mrowisko extends ObiektMapy {
 
             level++;
             antMax += 2;
-            durability += 0.2*durability;
+            maxDurability += 0.2*maxDurability;
 
 
             System.out.println("[Mrowisko "+id+" zostalo ulepszone]");
         }
     }
 
+    public void starvation() {
+        if(foodCount == 0) {
+            durability -= 1;
+        }
+    }
 
+    public void defeat() {
+        if(durability < 0 ) {
+            onMap = false;
+            for(Mrowka m: mrowki) {
+                m.onMap = false;
+            }
+        }
+    }
 
     public void foodDrain() {
-        foodCount -= mrowki.size();
+        if (foodCount>0) foodCount -= 0.1*mrowki.size();
+        if (foodCount<0) foodCount=0;
+    }
+
+    private void regeneration() {
+        if(foodCount>0 && durability < maxDurability) durability += 5;
     }
 
     public int getLevel() {
@@ -88,13 +108,13 @@ public class Mrowisko extends ObiektMapy {
 
             // Zolnierz ma 1/5 szansy na stworzenie
             if(rnd.nextInt(5) == 0) {
-                Zolnierz nowyZolnierz = new Zolnierz(x+rndX,y+rndY);
+                Zolnierz nowyZolnierz = new Zolnierz(x+rndX,y+rndY,this);
                 mrowki.add(nowyZolnierz);
                 mapa.listaObiektow.add(nowyZolnierz);
 
             }
             else {
-                Robotnica nowaRobotnica = new Robotnica(x+rndX,y+rndY);
+                Robotnica nowaRobotnica = new Robotnica(x+rndX,y+rndY,this);
                 mrowki.add(nowaRobotnica);
                 mapa.listaObiektow.add(nowaRobotnica);
             }
@@ -142,12 +162,20 @@ public class Mrowisko extends ObiektMapy {
     }
 
     public void update() {
-        // aktualizujemy stan dla każdej mrówki
-        for(Mrowka m: mrowki) {
-            m.update();
+        if(onMap) {
+            // aktualizujemy stan dla każdej mrówki
+            for(Mrowka m: mrowki) {
+                m.update();
+            }
+            foodDrain();
+            levelUp();  // ulepszamy mrowisko jeśli można
+            starvation();
+            defeat();
+            regeneration();
+            //System.out.println("food"+foodCount);
+            //System.out.println("hp"+durability);
+
         }
-        //foodDrain();
-        levelUp();  // ulepszamy mrowisko jeśli można
     }
 
 }
