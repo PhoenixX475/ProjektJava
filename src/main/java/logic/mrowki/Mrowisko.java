@@ -1,53 +1,53 @@
 package logic.mrowki;
 
 import graphics.MapaPanel;
-import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 
 public class Mrowisko extends ObiektMapy {
     // Pola dotyczące samego mrowiska
-    public int id;
     private int level;
-    private int durability;
     public int stickCount;
     public int foodCount;
     private MapaPanel mapa;
 
     // Pola dotyczące mrówek danego mrowiska
-    private int antCount;
+    public int antCount;
     private int antMax;
     public List<Mrowka> mrowki;
-    //public Coordinates coordinates;
 
-    //Pola dotyczące koloru mrowisk i mrowek
+    private static final Random random = new Random();
     private final Color kolor;
     private static final Set<Color> zajeteKolory = new HashSet<>();
-    private static final Random random = new Random();
 
     public Mrowisko(int x, int y, MapaPanel mapa) {
-        super(x,y,3,3);
+        super(x,y,100);
 
-        //this.id = id;
         this.level = 1;
-        this.durability = 100;
         this.stickCount = 0;
-        this.foodCount = 30;
+        this.foodCount = 200;
 
         this.mapa = mapa;
         this.antCount = 0;
-        this.antMax = 5;
+        this.antMax = 3;
         this.mrowki = new ArrayList<>();
-        //this.coordinates = new Coordinates(x,y);
+
         this.kolor = UnikalnyKolor();
     }
+
+
+    public int getLevel(){
+        return level;
+    }
+
+    public int getAntCount(){
+        return antCount;
+    }
+
 
 
     public void levelUp () {
@@ -56,30 +56,39 @@ public class Mrowisko extends ObiektMapy {
 
             level++;
             antMax += 2;
-            durability += 0.2*durability;
+            maxHp += 0.2*maxHp;
 
 
-            System.out.println("[Mrowisko "+id+" zostalo ulepszone]");
+            //System.out.println("[Mrowisko  zostalo ulepszone]");
         }
     }
 
 
 
-    public void foodDrain() {
-        foodCount -= mrowki.size();
+    public void starvation() {
+        if(foodCount == 0) {
+            hp -= 1;
+        }
     }
 
-    public int getLevel() {
-        return level;
+    @Override
+    public void die() {
+        if(hp <= 0 ) {
+            for(Mrowka m: mrowki) {
+                m.onMap = false;
+            }
+            onMap = false;
+        }
     }
-    public int getDurability() {
-        return durability;
+
+    public void foodDrain() {
+        if (foodCount>0) foodCount -= 0.1*mrowki.size();
+        if (foodCount<0) foodCount=0;
     }
-    public int getAntCount() {
-        return antCount;
-    }
-    public int getAntMax() {
-        return antMax;
+
+    private void regeneration() {
+        if(foodCount>0 && hp < maxHp) hp += 5;
+        if(hp > maxHp) hp = maxHp;
     }
 
     private Color UnikalnyKolor() {
@@ -88,17 +97,20 @@ public class Mrowisko extends ObiektMapy {
             int r = random.nextInt(100);
             int g = random.nextInt(100);
             int b = random.nextInt(100);
+
             c = new Color(r,g,b);
+
         }while (zajeteKolory.contains(c));
+
         zajeteKolory.add(c);
+
         return c;
     }
 
-    public Color getKolor() {
-        return kolor;
-    }
+
+
     public void createAnt(MapaPanel mapa) {
-        if(antCount < antMax) {
+        if(onMap && antCount < antMax) {
 
             // losowanie miejsca gdzie mrówka się zespawni
             Random rnd = new Random();
@@ -108,13 +120,13 @@ public class Mrowisko extends ObiektMapy {
 
             // Zolnierz ma 1/5 szansy na stworzenie
             if(rnd.nextInt(5) == 0) {
-                Zolnierz nowyZolnierz = new Zolnierz(x+rndX,y+rndY, mapa, this.kolor);
+                Zolnierz nowyZolnierz = new Zolnierz(x+rndX,y+rndY,this,mapa,this.kolor);
                 mrowki.add(nowyZolnierz);
                 mapa.listaObiektow.add(nowyZolnierz);
 
             }
             else {
-                Robotnica nowaRobotnica = new Robotnica(x+rndX,y+rndY, mapa, kolor);
+                Robotnica nowaRobotnica = new Robotnica(x+rndX,y+rndY,this,mapa,this.kolor);
                 mrowki.add(nowaRobotnica);
                 mapa.listaObiektow.add(nowaRobotnica);
             }
@@ -124,51 +136,39 @@ public class Mrowisko extends ObiektMapy {
 
         }
     }
-//System.out.println("Dodano mrowke do mrowiska " + antCount);
 
-
-
-    public void destroyMrowisko() {
-        // usuwamy mrowisko z listy która przechowywa wszystkie mrowiska znajdujące się na mapie
-        // można byłoby przenieść tą funkcję jako ogólną do wszystkich obiektów w sumie
-        // zależy od zapisywania obiektów na mapie
-        // do zrobienia później pod koniec implementacji
-    }
-
-
-    public void wypiszMrowki() {
-        int count = 0;
-        for(Mrowka m: mrowki) {
-            System.out.printf("[%d] %s %d\n",++count,"mrowka",m.getHp());
-        }
-    }
-
-    public void mrowiskoInfo() {
-        System.out.println("\n[Mrowisko" + id + " info]");
-        System.out.println("Poziom: " + level);
-        System.out.println("Wytrzymalosc: " + durability);
-        System.out.println("Liczba mrowek: " + antCount);
-        System.out.println("Maksymalna liczba mrowek: " + antMax);
-        System.out.println("Liczba patykow: " + stickCount);
-        System.out.println("Liczba pozywienia: " + foodCount);
-    }
 
 
 
 
     public void drawObject(Graphics g, int rozmiarPola ) {
         g.setColor(kolor);
-        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5 + level, rozmiarPola * 5 + level);
+        int size;
+        if( level <= 4) size = level;
+        else size = 2*level;
+        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5 + size, rozmiarPola * 5 + size);
     }
 
     public void update() {
-        // aktualizujemy stan dla każdej mrówki
-        for(Mrowka m: mrowki) {
-            m.update();
+        //System.out.println(this + " " + hp);
+
+
+        if(onMap) {
+            // aktualizujemy stan dla każdej mrówki
+            for(Mrowka m: mrowki) {
+                m.update();
+            }
+            foodDrain();
+            levelUp();  // ulepszamy mrowisko jeśli można
+            starvation();
+            die();
+            regeneration();
+            //System.out.println("food"+foodCount);
+            //System.out.println("hp"+hp);
+
         }
-        //foodDrain();
-        levelUp();  // ulepszamy mrowisko jeśli można
     }
+
 
 }
 

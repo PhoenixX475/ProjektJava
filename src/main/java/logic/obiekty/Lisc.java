@@ -18,7 +18,7 @@ public class Lisc extends Przedmiot {
 
     @Override
     public void drawObject(Graphics g, int rozmiarPola) {
-        if(onGround) {
+        if(onMap) {
             g.setColor(Color.GREEN.darker());
             g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola);
         }

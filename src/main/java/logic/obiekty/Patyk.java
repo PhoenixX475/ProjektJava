@@ -14,7 +14,7 @@ public class Patyk extends Przedmiot {
 
     @Override
     public void drawObject(Graphics g, int rozmiarPola) {
-        if(onGround) {
+        if(onMap) {
             g.setColor(new Color(139, 69, 19)); // brązowy
             g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola);
         }
