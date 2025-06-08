@@ -1,15 +1,12 @@
 package graphics;
 
 import logic.mrowki.Mrowisko;
-import logic.mrowki.Mrowka;
-import logic.mrowki.Robotnica;
 import logic.obiekty.Lisc;
 import logic.obiekty.Patyk;
 import logic.rozne.ObiektMapy;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ObjectStreamException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -21,7 +18,6 @@ public class MapaPanel extends JPanel {
     private static final int kolumny = 100;
     private final int rozmiarPola = 6;
     private static final Pole[][] mapa = new Pole[wiersze][kolumny];
-
     private final Random random = new Random();
 
     // Listy przechowujące obiekty używane w symulacji
@@ -29,7 +25,16 @@ public class MapaPanel extends JPanel {
     public static LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
     public static LinkedList<ObiektMapy> doUsuniecia = new LinkedList<>();
 
-    public MapaPanel(int liczbaMrowisk, int czasMrowki, int czasLisci, int czasPatykow) {
+    //pole odpowiedzialne za zakonczenie symulacji
+    private int iloscMrowisk = listaMrowisk.size();
+    private int czasTrwaniaSymulacji = -1; // w milisekundach
+    private long startTime = -1;
+    private boolean symulacjaAktywna = true;
+    private boolean choice;
+
+
+
+    public MapaPanel(int liczbaMrowisk, int czasMrowki, int czasLisci, int czasPatykow, int czasTrwania, boolean choice) {
         this.setPreferredSize(new Dimension(kolumny * rozmiarPola, wiersze * rozmiarPola));
 
 
@@ -45,6 +50,23 @@ public class MapaPanel extends JPanel {
         spawnLisc(czasLisci);
         spawnPatyk(czasPatykow);
 
+    }
+
+    public void rozpocznijSymulacje(int czasTrwania) {
+        this.czasTrwaniaSymulacji = czasTrwania;
+        this.choice = this.choice; // <- właściwie już przekazany w konstruktorze, więc OK
+        rozpocznijSymulacje(this.choice, czasTrwania);
+    }
+
+
+    private Runnable onSimulationEnd;
+
+    public void setOnSimulationEnd(Runnable callback) {
+        this.onSimulationEnd = callback;
+    }
+
+    public static LinkedList<Mrowisko> getMrowiska() {
+        return listaMrowisk;
     }
 
 
@@ -133,6 +155,60 @@ public class MapaPanel extends JPanel {
             listaObiektow.add(m);
         }
     }
+
+    public void rozpocznijSymulacje(boolean choice, int czasTrwania) {
+        switch (String.valueOf(choice)) {
+            case "false" -> {
+                Timer battleTimer = new Timer(1000, e -> {
+                    long aktywneMrowiska = listaMrowisk.stream().filter(m -> m.onMap).count();
+                    if (aktywneMrowiska <= 1 && symulacjaAktywna) {
+                        symulacjaAktywna = false;
+                        if (onSimulationEnd != null) {
+                            onSimulationEnd.run();  // <- wywołanie hooka
+                        }
+
+                        JOptionPane.showMessageDialog(this, "Zwycięskie mrowisko!");
+
+                        ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
+
+                        // Opcjonalnie zakończ aplikację
+                        Timer exitTimer = new Timer(1000, ev -> System.exit(0));
+                        exitTimer.setRepeats(false);
+                        exitTimer.start();
+                    }
+                });
+                battleTimer.start();
+            }
+
+            case "true" -> {
+                // Tryb Timer – kończy się po zadanym czasie
+                if (czasTrwaniaSymulacji <= 0) {
+                    this.czasTrwaniaSymulacji = czasTrwania;
+                    this.startTime = System.currentTimeMillis();
+
+                    Timer koniecTimer = new Timer(czasTrwania, e -> {
+                        symulacjaAktywna = false;
+
+                        JOptionPane.showMessageDialog(this, "Symulacja zakończona.");
+
+                        ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
+
+                        if (onSimulationEnd != null) {
+                            onSimulationEnd.run();  // <- wywołanie hooka (czyli statystyki)
+                        }
+
+                        // Opcjonalnie: zakończenie programu po chwili
+                        Timer exitTimer = new Timer(1000, ev -> System.exit(0));
+                        exitTimer.setRepeats(false);
+                        exitTimer.start();
+                    });
+                    koniecTimer.setRepeats(false);
+                    koniecTimer.start();
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {

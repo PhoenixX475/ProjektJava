@@ -2,8 +2,6 @@ package logic.mrowki;
 import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
-import java.awt.*;
-import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -17,6 +15,7 @@ public abstract class Mrowka extends ObiektMapy {
     protected double damage;
     public Mrowka fights;
     public Mrowisko myMrowisko;
+    public int zabiteMrowki = 0; // liczba zabitych mrówek przez tę mrówkę
 
     // Pola mrówki odpowiedzialne za położenie na mapie
     public Coordinates coordinates;

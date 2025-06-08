@@ -4,7 +4,6 @@ import logic.obiekty.*;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
-import java.util.Random;
 
 /**Robotnica jest odpowiedzialna za podnoszenie przedmiotów i przenoszenie ich do Mrowiska
  * W celu utrzymania go
@@ -33,7 +32,7 @@ public class Robotnica extends Mrowka {
                 ((Przedmiot)targeting).onMap = false;
                 holding = targeting;
                 targeting = myMrowisko;
-                //System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
+                System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
             }
         }
     }
@@ -48,7 +47,7 @@ public class Robotnica extends Mrowka {
                 }
                 holding = null;
                 targeting = null;
-                //System.out.println("Mrowka dodała przedmiot do mrowiska");
+                System.out.println("Mrowka dodała przedmiot do mrowiska");
             }
         }
     }

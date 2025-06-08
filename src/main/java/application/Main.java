@@ -2,15 +2,11 @@ package application;
 import javax.swing.*;
 import graphics.MapaPanel;
 import graphics.StartMenu;
-import graphics.TypObiektu;
+import graphics.ZliczarkaStatystyk;
 import logic.mrowki.*;
-import logic.obiekty.Lisc;
-import logic.obiekty.Patyk;
 
-import java.util.Random;
-import java.util.Scanner;
 
-import static java.awt.SystemColor.menu;
+import java.util.LinkedList;
 
 /**
  * Główna klasa aplikacji
@@ -39,16 +35,24 @@ public class Main {
             int liczbaMrowisk = menu.getLiczbaMrowisk();
             int czasMrowki = menu.getMrowkiInterval();
             int czasPrzedmioty = menu.getPrzedmiotyInterval();
-
+            int czasTrwania = menu.getCzasInterval();
+            boolean choice = menu.getChoice();
 
             //============SYMULACJA==============================================
 
             // Stworzenie mapy
             JFrame frame = new JFrame("Symulacja Mrowisk");
-            MapaPanel mapa = new MapaPanel(liczbaMrowisk, czasMrowki, czasPrzedmioty, czasPrzedmioty);
+            MapaPanel mapa = new MapaPanel(liczbaMrowisk, czasMrowki, czasPrzedmioty, czasPrzedmioty, czasTrwania, choice);
 
             //Dodanie Mrowisk na mapę
             mapa.dodajLosoweMrowiska(liczbaMrowisk);
+
+            mapa.setOnSimulationEnd(() -> {
+                LinkedList<Mrowisko> mrowiska = mapa.getMrowiska();
+                ZliczarkaStatystyk.zliczStatystyki(mrowiska);
+            });
+
+            mapa.rozpocznijSymulacje(choice, czasTrwania);
 
             // Zakończenie wyświetlania gdy użytkownik nacisnie klawisz ESC
             mapa.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "exit");
@@ -66,11 +70,7 @@ public class Main {
             frame.setVisible(true);
 
 
-
-
-
         });
-
 
 
 

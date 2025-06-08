@@ -1,7 +1,6 @@
 package logic.mrowki;
 
 import graphics.MapaPanel;
-import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
@@ -128,14 +127,19 @@ public class Mrowisko extends ObiektMapy {
         }
     }
 
+    public int getLevel(){
+        return level;
+    }
 
-
-
+    public int getAntCount(){
+        return antCount;
+    }
 
     public void drawObject(Graphics g, int rozmiarPola ) {
         g.setColor(kolor);
         g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 5 + level, rozmiarPola * 5 + level);
     }
+
 
     public void update() {
         if(onMap) {

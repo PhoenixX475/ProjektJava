@@ -1,7 +1,5 @@
 package logic.obiekty;
 
-import logic.rozne.ObiektMapy;
-
 import java.awt.*;
 
 public class Lisc extends Przedmiot {
