@@ -1,7 +1,6 @@
 package logic.mrowki;
 
 import graphics.MapaPanel;
-import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;

@@ -46,14 +46,6 @@ public abstract class ObiektMapy {
         }
     }
 
-    public boolean occupied(int dx, int dy) {
-        // dx i dy oznacza środek jakiegoś obiektu
-        // x i y oznacza środek naszego obiektu
-        // width i height oznaczają szerokość i wysokość naszego obiektu
-        // sprawdzamy czy nasz obiekt po przemieszczeniu będzie zachodził na inny obiekt
-        return dx >= x && dx < x + width && dy >= y && dy < y + height;
-    }
-
     // Rysuje obiekt na mapie
     public abstract void drawObject(Graphics g, int rozmiarPola);
 

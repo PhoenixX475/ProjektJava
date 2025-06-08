@@ -1,6 +1,4 @@
 package logic.mrowki;
-import logic.obiekty.Przedmiot;
-import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
@@ -19,7 +17,6 @@ public abstract class Mrowka extends ObiektMapy {
     public Mrowisko myMrowisko;
 
     // Pola mrówki odpowiedzialne za położenie na mapie
-    public Coordinates coordinates;
     public Random randomMoveX = new Random();
     public Random randomMoveY = new Random();
 
@@ -32,7 +29,6 @@ public abstract class Mrowka extends ObiektMapy {
         this.fights = null;
         this.myMrowisko = mrowisko;
         this.targeting = null;
-        //this.coordinates = new Coordinates(x,y);
     }
 
 
