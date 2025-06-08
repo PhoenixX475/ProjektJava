@@ -40,6 +40,16 @@ public class Mrowisko extends ObiektMapy {
     }
 
 
+    public int getLevel(){
+        return level;
+    }
+
+    public int getAntCount(){
+        return antCount;
+    }
+
+
+
     public void levelUp () {
         if(stickCount > 5*level) {
             stickCount -= 5*level;
@@ -52,6 +62,8 @@ public class Mrowisko extends ObiektMapy {
             //System.out.println("[Mrowisko  zostalo ulepszone]");
         }
     }
+
+
 
     public void starvation() {
         if(foodCount == 0) {

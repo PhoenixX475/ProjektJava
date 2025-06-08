@@ -29,9 +29,22 @@ public class MapaPanel extends JPanel {
     public static LinkedList<ObiektMapy> listaObiektow = new LinkedList<>();
     public static LinkedList<ObiektMapy> doUsuniecia = new LinkedList<>();
 
-    public MapaPanel(int liczbaMrowisk, int czasMrowki, int czasLisci, int czasPatykow) {
-        this.setPreferredSize(new Dimension(kolumny * rozmiarPola, wiersze * rozmiarPola));
 
+    //pole odpowiedzialne za zakonczenie symulacji
+    private int iloscMrowisk = listaMrowisk.size();
+    private int czasTrwaniaSymulacji = -1; // w milisekundach
+    private long startTime = -1;
+    private boolean symulacjaAktywna = true;
+    private boolean choice;
+
+
+
+
+
+
+    public MapaPanel(int liczbaMrowisk, int czasMrowki, int czasLisci, int czasPatykow, int czasTrwania, boolean choice) {
+
+        this.setPreferredSize(new Dimension(kolumny * rozmiarPola, wiersze * rozmiarPola));
 
         // Inicjalizacja mapy: puste pola
         for (int y = 0; y < wiersze; y++) {
@@ -44,9 +57,91 @@ public class MapaPanel extends JPanel {
         spawnAnts(czasMrowki);
         spawnLisc(czasLisci);
         spawnPatyk(czasPatykow);
-
-
     }
+
+    public void rozpocznijSymulacje(int czasTrwania) {
+        this.czasTrwaniaSymulacji = czasTrwania;
+        rozpocznijSymulacje(this.choice, czasTrwania);
+    }
+    private Runnable onSimulationEnd;
+    public void setOnSimulationEnd(Runnable callback) {
+        this.onSimulationEnd = callback;
+    }
+
+
+    public static LinkedList<Mrowisko> getMrowiska() {
+        return listaMrowisk;
+    }
+
+
+    public void rozpocznijSymulacje(boolean choice, int czasTrwania) {
+        switch (String.valueOf(choice)) {
+            case "false" -> {
+                Timer battleTimer = new Timer(1000, e -> {
+                    long aktywneMrowiska = listaMrowisk.stream().filter(m -> m.onMap).count();
+                    if (aktywneMrowiska <= 1 && symulacjaAktywna) {
+                        symulacjaAktywna = false;
+                        if (onSimulationEnd != null) {
+                            onSimulationEnd.run();  // <- wywołanie hooka
+                        }
+                        JOptionPane.showMessageDialog(this, "Zwycięskie mrowisko!");
+                        ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
+                        // Opcjonalnie zakończ aplikację
+                        Timer exitTimer = new Timer(1000, ev -> System.exit(0));
+                        exitTimer.setRepeats(false);
+                        exitTimer.start();
+                    }
+                });
+                battleTimer.start();
+            }
+            case "true" -> {
+
+
+                // Tryb Timer – kończy się po zadanym czasie
+
+
+                if (czasTrwaniaSymulacji <= 0) {
+
+
+                    this.czasTrwaniaSymulacji = czasTrwania;
+
+
+                    this.startTime = System.currentTimeMillis();
+
+
+                    Timer koniecTimer = new Timer(czasTrwania, e -> {
+
+
+                        symulacjaAktywna = false;
+
+
+                        JOptionPane.showMessageDialog(this, "Symulacja zakończona.");
+
+
+                        ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
+
+
+                        if (onSimulationEnd != null) {
+                            onSimulationEnd.run();  // <- wywołanie hooka (czyli statystyki)
+                        }
+
+
+                        // Opcjonalnie: zakończenie programu po chwili
+                        Timer exitTimer = new Timer(1000, ev -> System.exit(0));
+
+                        exitTimer.setRepeats(false);
+                        exitTimer.start();
+
+                    });
+
+                    koniecTimer.setRepeats(false);
+                    koniecTimer.start();
+                }
+            }
+        }
+    }
+
+
 
 
     public void updateMap() {

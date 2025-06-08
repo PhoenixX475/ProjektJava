@@ -19,7 +19,7 @@ public abstract class Mrowka extends ObiektMapy {
     // Pola mrówki odpowiedzialne za położenie na mapie
     public Random randomMoveX = new Random();
     public Random randomMoveY = new Random();
-
+    public int zabiteMrowki = 0; // liczba zabitych mrówek przez tę mrówkę
     public ObiektMapy targeting;
 
 
