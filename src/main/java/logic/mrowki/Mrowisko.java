@@ -21,6 +21,7 @@ public class Mrowisko extends ObiektMapy {
     private int antCount;
     private int antMax;
     public List<Mrowka> mrowki;
+    public int leafCount = 0;
 
     private static final Random random = new Random();
     private final Color kolor;

@@ -15,6 +15,7 @@ public class Robotnica extends Mrowka {
     // Pola robotnicy
     public ObiektMapy holding;
     private final Color kolor;
+    public int leafCount;
 
 
     public Robotnica(int x, int y,Mrowisko mrowisko,MapaPanel mapa, Color kolor) {
@@ -42,6 +43,7 @@ public class Robotnica extends Mrowka {
             if (x == myMrowisko.x && y == myMrowisko.y) {
                 if (holding instanceof Lisc) {
                     myMrowisko.foodCount += Lisc.foodContribution;
+                    myMrowisko.leafCount++;
                 } else if (holding instanceof Patyk) {
                     myMrowisko.stickCount += Patyk.upgradeContribution;
                 }

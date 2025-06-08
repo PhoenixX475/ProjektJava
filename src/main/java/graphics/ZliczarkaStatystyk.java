@@ -1,6 +1,7 @@
 package graphics;
 
 import logic.mrowki.Mrowisko;
+import logic.mrowki.Robotnica;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -19,7 +20,7 @@ public class ZliczarkaStatystyk {
             Mrowisko m = mrowiska.get(i);
             sb.append("Mrowisko #").append(i + 1).append("\n");
             sb.append("  Patyki: ").append(m.stickCount).append("\n");
-            sb.append("  Liscie: ").append(m.foodCount).append("\n");
+            sb.append("  Liscie: ").append(m.leafCount).append("\n");
             sb.append("  Level: ").append(m.getLevel()).append("\n");
             sb.append("  Liczba mrowek: ").append(m.getAntCount()).append("\n");
 
