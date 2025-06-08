@@ -44,6 +44,8 @@ public class Robotnica extends Mrowka {
             if (x == myMrowisko.x && y == myMrowisko.y) {
                 if (holding instanceof Lisc) {
                     myMrowisko.foodCount += Lisc.foodContribution;
+                    myMrowisko.foodDelivered ++;
+
                 } else if (holding instanceof Patyk) {
                     myMrowisko.stickCount += Patyk.upgradeContribution;
                 }

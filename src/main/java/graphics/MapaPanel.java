@@ -115,10 +115,10 @@ public class MapaPanel extends JPanel {
                         symulacjaAktywna = false;
 
 
-                        JOptionPane.showMessageDialog(this, "Symulacja zakończona.");
+                        JOptionPane.showMessageDialog(this, "Symulacja zakonczona.");
 
-
-                        ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
+                        if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
+                        ((Timer) e.getSource()).stop(); // Zatrzymaj timer
 
 
                         if (onSimulationEnd != null) {
@@ -162,12 +162,11 @@ public class MapaPanel extends JPanel {
                 if(listaObiektow.contains(u)) {
                     listaObiektow.remove(u);
                     listaMrowisk.remove(u);
-                    System.out.println("Usunieto obiekt" + u);
                 }
             }
             doUsuniecia.clear();
 
-            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
+            if (listaMrowisk.size() <= 1 || !symulacjaAktywna) ((Timer)e.getSource()).stop();
 
 
             repaint();
@@ -181,7 +180,7 @@ public class MapaPanel extends JPanel {
                 m.createAnt(this);
             }
 
-            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
+            if (listaMrowisk.size() <= 1 || !symulacjaAktywna) ((Timer)e.getSource()).stop();
         });
         mrowkiTimer.start();
     }
@@ -196,7 +195,7 @@ public class MapaPanel extends JPanel {
                 //mapa[y][x].typ = TypObiektu.LISC;
             }
 
-            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
+            if (listaMrowisk.size() <= 1 || !symulacjaAktywna) ((Timer)e.getSource()).stop();
 
 
         });
@@ -216,7 +215,7 @@ public class MapaPanel extends JPanel {
                 //mapa[y][x].typ = TypObiektu.PATYK;
             }
 
-            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
+            if (listaMrowisk.size() <= 1 || !symulacjaAktywna) ((Timer)e.getSource()).stop();
 
 
         });

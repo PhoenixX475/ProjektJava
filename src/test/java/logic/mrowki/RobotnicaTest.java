@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RobotnicaTest {
     void testgrab() {
-        MapaPanel mapa = new MapaPanel(1,1,1,1);
+        MapaPanel mapa = new MapaPanel(1,1,1,1,1,true);
         Mrowisko mrowisko = new Mrowisko(1,1,mapa);
         Robotnica r = new Robotnica(10,10,mrowisko,mapa, Color.BLACK);
         Lisc l = new Lisc(10,10);

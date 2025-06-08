@@ -41,7 +41,7 @@ public class ZliczarkaStatystyk {
             sb.append("  Patyki: ").append(m.stickCount).append("\n");
 
 
-            sb.append("  Liscie: ").append(m.foodCount).append("\n");
+            sb.append("  Liscie: ").append(m.foodDelivered).append("\n");
 
 
             sb.append("  Level: ").append(m.getLevel()).append("\n");
@@ -80,7 +80,7 @@ public class ZliczarkaStatystyk {
         Scanner scanner = new Scanner(System.in);
 
 
-        System.out.print("Podaj ścieżkę do zapisu pliku (bez rozszerzenia, np. C:\\\\ścieżka\\\\plik): ");
+        System.out.print("Podaj sciezke do zapisu pliku (bez rozszerzenia, np. C:\\\\sciezka\\\\plik): ");
 
 
         String userPath = scanner.nextLine();
@@ -107,13 +107,13 @@ public class ZliczarkaStatystyk {
             writer.write(statystyki);
 
 
-            System.out.println("✅ Statystyki zapisane do pliku: " + filename);
+            System.out.println("Statystyki zapisane do pliku: " + filename);
 
 
         } catch (IOException e) {
 
 
-            System.err.println("❌ Błąd zapisu statystyk: " + e.getMessage());
+            System.err.println("Blad zapisu statystyk: " + e.getMessage());
 
 
         }

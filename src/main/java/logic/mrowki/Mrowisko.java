@@ -13,6 +13,7 @@ public class Mrowisko extends ObiektMapy {
     private int level;
     public int stickCount;
     public int foodCount;
+    public int foodDelivered;
     private MapaPanel mapa;
 
     // Pola dotyczące mrówek danego mrowiska

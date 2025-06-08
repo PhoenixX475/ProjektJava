@@ -76,15 +76,13 @@ public class StartMenu extends JDialog {
         czasSlider.setPaintTicks(true);
         czasSlider.setPaintLabels(true);
 
-
-        add(new JLabel("Czas trwania symulacji: (s)"));
         add(new JLabel("Liczba mrowisk:"));
         add(mrowiskaSlider);
         add(new JLabel("Czas tworzenia mrówek (s):"));
         add(mrowkiSlider);
         add(new JLabel("Czas pojawiania się przedmiotów (0,1s):"));
         add(przedmiotySlider);
-
+        add(new JLabel("Czas trwania symulacji: (s)"));
         czasSlider.setEnabled(false);
         add(czasSlider);
         add(new JLabel("Wybierz tryb gry:"));
