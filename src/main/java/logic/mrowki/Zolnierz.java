@@ -33,10 +33,8 @@ public class Zolnierz extends Mrowka{
                     // Jeśli w zasięgu
                     if (Math.abs(o.x - this.x) <= 5 && Math.abs(o.y - this.y) <= 5) {
                         o.dealDamage(damage);
-                        System.out.println(this +  " atakuje " +  o + "fights hp: " + o.hp);
 
                         if(o.hp <= 0) {
-                            System.out.println(o  + " umarla");
                             notFights.add(o);
                             o.onMap = false;
                         }

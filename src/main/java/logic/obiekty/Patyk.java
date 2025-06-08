@@ -3,13 +3,12 @@ package logic.obiekty;
 import java.awt.*;
 
 public class Patyk extends Przedmiot {
-    private int upgradeContribution; // decyduje ile pojedynczy patyk daje do ulepszenia mrowiska
+    public static int upgradeContribution = 1; // decyduje ile pojedynczy patyk daje do ulepszenia mrowiska
 
     // Kontruktor domyślny
     public Patyk(int x, int y)
     {
         super(x,y);
-        this.upgradeContribution = 1;
     }
 
     @Override

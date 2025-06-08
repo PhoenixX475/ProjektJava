@@ -89,10 +89,8 @@ public abstract class Mrowka extends ObiektMapy {
         if(targeting == null) return;
 
         if (Math.abs(targeting.x - this.x) <= 3 && Math.abs(targeting.y - this.y) <= 3) {
-            //System.out.println(this +  " atakuje " +  fights + "fights hp: " + fights.hp);
             fights.dealDamage(damage);
             if(fights.hp <= 0) {
-                //System.out.println(fights  + " umarla");
                 fights.onMap = false;
             }
         }

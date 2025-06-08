@@ -49,7 +49,6 @@ public class Robotnica extends Mrowka {
                 }
                 holding = null;
                 targeting = null;
-                //System.out.println("Mrowka dodała przedmiot do mrowiska");
             }
         }
     }

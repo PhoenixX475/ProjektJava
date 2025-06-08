@@ -58,8 +58,6 @@ public class Mrowisko extends ObiektMapy {
             antMax += 2;
             maxHp += 0.2*maxHp;
 
-
-            //System.out.println("[Mrowisko  zostalo ulepszone]");
         }
     }
 
@@ -150,7 +148,6 @@ public class Mrowisko extends ObiektMapy {
     }
 
     public void update() {
-        //System.out.println(this + " " + hp);
 
 
         if(onMap) {
@@ -163,8 +160,6 @@ public class Mrowisko extends ObiektMapy {
             starvation();
             die();
             regeneration();
-            //System.out.println("food"+foodCount);
-            //System.out.println("hp"+hp);
 
         }
     }
