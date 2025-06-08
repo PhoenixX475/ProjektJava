@@ -45,6 +45,7 @@ public class MapaPanel extends JPanel {
         spawnLisc(czasLisci);
         spawnPatyk(czasPatykow);
 
+
     }
 
 
@@ -65,10 +66,13 @@ public class MapaPanel extends JPanel {
             for(ObiektMapy u : doUsuniecia) {
                 if(listaObiektow.contains(u)) {
                     listaObiektow.remove(u);
+                    listaMrowisk.remove(u);
                     System.out.println("Usunieto obiekt" + u);
                 }
             }
             doUsuniecia.clear();
+
+            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
 
 
             repaint();
@@ -81,6 +85,8 @@ public class MapaPanel extends JPanel {
             for (Mrowisko m : listaMrowisk) {
                 m.createAnt(this);
             }
+
+            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
         });
         mrowkiTimer.start();
     }
@@ -94,6 +100,8 @@ public class MapaPanel extends JPanel {
                 listaObiektow.add(lisc);
                 //mapa[y][x].typ = TypObiektu.LISC;
             }
+
+            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
 
 
         });
@@ -111,9 +119,9 @@ public class MapaPanel extends JPanel {
                 Patyk patyk = new Patyk(x, y);
                 listaObiektow.add(patyk);
                 //mapa[y][x].typ = TypObiektu.PATYK;
-
-
             }
+
+            if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
 
 
         });

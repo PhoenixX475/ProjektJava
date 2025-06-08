@@ -1,4 +1,5 @@
 package logic.mrowki;
+import logic.obiekty.Przedmiot;
 import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
@@ -13,9 +14,8 @@ import java.util.Random;
 
 public abstract class Mrowka extends ObiektMapy {
     // Pola mrówki
-    protected int hp;  // Punkty życia mrówki jak 0 to umiera
-    protected double damage;
-    public Mrowka fights;
+    protected int damage;
+    public ObiektMapy fights;
     public Mrowisko myMrowisko;
 
     // Pola mrówki odpowiedzialne za położenie na mapie
@@ -26,22 +26,13 @@ public abstract class Mrowka extends ObiektMapy {
     public ObiektMapy targeting;
 
 
-    public Mrowka(int hp, double damage, int x,int y,Mrowisko mrowisko) {
-        super(x,y);
-        this.hp = hp;
+    public Mrowka(int hp, int damage, int x,int y,Mrowisko mrowisko) {
+        super(x,y,hp);
         this.damage = damage;
         this.fights = null;
         this.myMrowisko = mrowisko;
         this.targeting = null;
         //this.coordinates = new Coordinates(x,y);
-    }
-
-    // Metody odpowiedzialne za zadawanie i otrzymywanie obrażeń przez mrówki
-    public double getDamage() {
-        return damage;
-    }
-    public void dealDamage(double dmg) {
-        hp -= dmg;
     }
 
 
@@ -62,8 +53,12 @@ public abstract class Mrowka extends ObiektMapy {
     }
 
 
-    public void moveToTarget() {
+    protected void moveToTarget() {
         if (targeting == null) return;
+        if(!targeting.onMap) {
+            targeting = null;
+            return;
+        }
 
         int dx = Integer.compare(targeting.x, this.x);
         int dy = Integer.compare(targeting.y, this.y);
@@ -75,12 +70,15 @@ public abstract class Mrowka extends ObiektMapy {
 
 
 
-    public ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
+    protected ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
         for (ObiektMapy obj : listaObiektow) {
             if (obj == this) continue; // pomiń samą siebie
-            if (!obj.onMap) continue;  // pomiń obiekty, które już zostały zabrane
-            // Sprawdź zasięg 3x3 (lub większy)
-            if(obj == this.myMrowisko) continue;
+            if (!obj.onMap) continue;  // pomiń obiekty, które już zostały usunięte
+            if(obj == this.myMrowisko) continue; // pomiń własne mrowisko
+            if(this.myMrowisko.mrowki.contains(obj)) continue; // pomiń przyjazne mrówki
+
+
+            // jeśli obiekt jest w zasięgu to zwróć ten obiekt
             if (Math.abs(obj.x - this.x) <= 5 && Math.abs(obj.y - this.y) <= 5) {
                 return obj;
             }
@@ -88,10 +86,42 @@ public abstract class Mrowka extends ObiektMapy {
         return null;
     }
 
+    protected void attackTarget() {
+        if(fights == null) return;
+        if(hp <= 0) return;
+        if(!onMap) return;
+        if(targeting == null) return;
 
-    public int getHp() {
-        return hp;
+        if (Math.abs(targeting.x - this.x) <= 3 && Math.abs(targeting.y - this.y) <= 3) {
+            //System.out.println(this +  " atakuje " +  fights + "fights hp: " + fights.hp);
+            fights.dealDamage(damage);
+            if(fights.hp <= 0) {
+                //System.out.println(fights  + " umarla");
+                fights.onMap = false;
+            }
+        }
+
     }
+
+
+
+    @Override
+    public void die() {
+        if(hp<=0) {
+            onMap = false;
+            targeting = null;
+            fights = null;
+            myMrowisko.antCount--;
+        }
+        if(myMrowisko == null || myMrowisko.hp <= 0) onMap = false;
+    }
+
+    protected void regeneration() {
+        if(fights == null && hp<maxHp) {
+            hp++;
+        }
+    }
+
 
 
 }

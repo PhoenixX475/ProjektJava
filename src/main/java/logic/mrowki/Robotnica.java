@@ -4,7 +4,8 @@ import logic.obiekty.*;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
-import java.util.Random;
+
+import static java.lang.Math.abs;
 
 /**Robotnica jest odpowiedzialna za podnoszenie przedmiotów i przenoszenie ich do Mrowiska
  * W celu utrzymania go
@@ -38,7 +39,7 @@ public class Robotnica extends Mrowka {
         }
     }
 
-    public void returnPrzedmiotToMrowisko() {
+    public void returnToMrowisko() {
         if (holding != null && targeting == myMrowisko) {
             if (x == myMrowisko.x && y == myMrowisko.y) {
                 if (holding instanceof Lisc) {
@@ -79,12 +80,30 @@ public class Robotnica extends Mrowka {
         }
 
         // Jeśli trzymamy przedmiot i nie mamy celu – wracamy do mrowiska
-        if (holding != null && targeting == null) {
+        if (holding != null) {
             targeting = myMrowisko;
         }
 
+        // Jeśli napotkamy na mrówkę
+        if(holding == null && targeting == null && ( obj instanceof Mrowka || obj instanceof Mrowisko)) {
+            targeting = obj;
+        }
+
+        if(targeting instanceof Mrowka || targeting instanceof  Mrowisko) {
+            fights = targeting;
+            attackTarget();
+        }
+
+
+
+
+
+
+        die();
+        regeneration();
         grab();
-        returnPrzedmiotToMrowisko();
+        returnToMrowisko();
+
 
 
     }
