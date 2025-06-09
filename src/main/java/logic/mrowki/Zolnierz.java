@@ -21,8 +21,7 @@ public class Zolnierz extends Mrowka{
 
 
     // Zolnierz zadaje obrażenia obszarowe
-    @Override
-    protected void attackTarget() {
+    public void attackTarget() {
         if(fights == null) return;
         if(hp <= 0) return;
         if(!onMap) return;

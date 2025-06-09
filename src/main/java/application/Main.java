@@ -27,6 +27,8 @@ import static java.awt.SystemColor.menu;
 public class Main {
     public static void main(String[] args) {
 
+
+
         SwingUtilities.invokeLater(() -> {
 
             //============MENU==================================================
@@ -49,6 +51,16 @@ public class Main {
             // Stworzenie mapy
             JFrame frame = new JFrame("Symulacja Mrowisk");
             MapaPanel mapa = new MapaPanel(liczbaMrowisk, czasMrowki, czasPrzedmioty, czasPrzedmioty,czasTrwania,choice);
+
+
+            //Stworzenie info
+            StringBuilder sb1 = new StringBuilder();
+            ZliczarkaStatystyk.createFileDane(sb1);
+
+            Timer timeInfo = new Timer(250, e -> {
+               ZliczarkaStatystyk.daneAdd(sb1);
+            });
+            timeInfo.start();
 
             //Dodanie Mrowisk na mapę
             mapa.dodajLosoweMrowiska(liczbaMrowisk);

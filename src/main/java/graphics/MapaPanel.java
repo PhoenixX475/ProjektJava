@@ -12,6 +12,7 @@ import java.awt.*;
 import java.io.ObjectStreamException;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.ArrayList;
 
 
 public class MapaPanel extends JPanel {
@@ -84,7 +85,7 @@ public class MapaPanel extends JPanel {
                         if (onSimulationEnd != null) {
                             onSimulationEnd.run();  // <- wywołanie hooka
                         }
-                        JOptionPane.showMessageDialog(this, "Zwycięskie mrowisko!");
+                        JOptionPane.showMessageDialog(this, "Zwycieskie mrowisko!");
                         ((Timer) e.getSource()).stop(); // 🔴 Zatrzymaj timer
                         // Opcjonalnie zakończ aplikację
                         Timer exitTimer = new Timer(1000, ev -> System.exit(0));
@@ -166,6 +167,7 @@ public class MapaPanel extends JPanel {
             }
             doUsuniecia.clear();
 
+
             if (listaMrowisk.size() <= 1 || !symulacjaAktywna) ((Timer)e.getSource()).stop();
 
 
@@ -173,6 +175,10 @@ public class MapaPanel extends JPanel {
         });
         timer.start();
     }
+
+
+
+
     private void spawnAnts(int czasMrowki) {
         // Timer: tworzenie mrówek
         Timer mrowkiTimer = new Timer(czasMrowki, e -> {

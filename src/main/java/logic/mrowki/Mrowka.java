@@ -10,7 +10,7 @@ import java.util.Random;
  * Bazowa klasa dla mrówek*/
 
 
-public abstract class Mrowka extends ObiektMapy {
+public abstract class Mrowka extends ObiektMapy implements IMrowka {
     // Pola mrówki
     protected int damage;
     public ObiektMapy fights;
@@ -49,7 +49,7 @@ public abstract class Mrowka extends ObiektMapy {
     }
 
 
-    protected void moveToTarget() {
+    public void moveToTarget() {
         if (targeting == null) return;
         if(!targeting.onMap) {
             targeting = null;
@@ -66,7 +66,7 @@ public abstract class Mrowka extends ObiektMapy {
 
 
 
-    protected ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
+    public ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
         for (ObiektMapy obj : listaObiektow) {
             if (obj == this) continue; // pomiń samą siebie
             if (!obj.onMap) continue;  // pomiń obiekty, które już zostały usunięte
@@ -82,7 +82,7 @@ public abstract class Mrowka extends ObiektMapy {
         return null;
     }
 
-    protected void attackTarget() {
+    public void attackTarget() {
         if(fights == null) return;
         if(hp <= 0) return;
         if(!onMap) return;
