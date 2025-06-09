@@ -105,7 +105,7 @@ public abstract class Mrowka extends ObiektMapy implements IMrowka {
             onMap = false;
             targeting = null;
             fights = null;
-            myMrowisko.antCount--;
+            if(myMrowisko.antCount > 0) myMrowisko.antCount--;
         }
         if(myMrowisko == null || myMrowisko.hp <= 0) onMap = false;
     }

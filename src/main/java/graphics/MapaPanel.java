@@ -60,10 +60,7 @@ public class MapaPanel extends JPanel {
         spawnPatyk(czasPatykow);
     }
 
-    public void rozpocznijSymulacje(int czasTrwania) {
-        this.czasTrwaniaSymulacji = czasTrwania;
-        rozpocznijSymulacje(this.choice, czasTrwania);
-    }
+
     private Runnable onSimulationEnd;
     public void setOnSimulationEnd(Runnable callback) {
         this.onSimulationEnd = callback;
@@ -99,33 +96,21 @@ public class MapaPanel extends JPanel {
 
 
                 // Tryb Timer – kończy się po zadanym czasie
-
-
                 if (czasTrwaniaSymulacji <= 0) {
-
-
                     this.czasTrwaniaSymulacji = czasTrwania;
-
-
                     this.startTime = System.currentTimeMillis();
 
 
                     Timer koniecTimer = new Timer(czasTrwania, e -> {
-
-
                         symulacjaAktywna = false;
-
-
                         JOptionPane.showMessageDialog(this, "Symulacja zakonczona.");
 
                         if (listaMrowisk.size() <= 1) ((Timer)e.getSource()).stop();
                         ((Timer) e.getSource()).stop(); // Zatrzymaj timer
 
-
                         if (onSimulationEnd != null) {
                             onSimulationEnd.run();  // <- wywołanie hooka (czyli statystyki)
                         }
-
 
                         // Opcjonalnie: zakończenie programu po chwili
                         Timer exitTimer = new Timer(1000, ev -> System.exit(0));
@@ -141,8 +126,6 @@ public class MapaPanel extends JPanel {
             }
         }
     }
-
-
 
 
     public void updateMap() {
@@ -230,15 +213,49 @@ public class MapaPanel extends JPanel {
         patykiTimer.start();
     }
 
-    public void dodajLosoweMrowiska(int ile){
+    public void dodajLosoweMrowiska(int ile) {
         Random r = new Random();
-        for (int i = 0; i < ile; i++) {
-            int x = r.nextInt(90);
-            int y = r.nextInt(90);
+        int minimalnaOdleglosc = 15; // jednostki pól mapy
+        int probaLimit = 1000;
 
-            Mrowisko m = new Mrowisko(x, y, this);
-            listaMrowisk.add(m);
-            listaObiektow.add(m);
+        for (int i = 0; i < ile; i++) {
+            boolean znaleziono = false;
+            int proby = 0;
+
+            while (!znaleziono && proby < probaLimit) {
+
+                // Pozycja mrowiska jest ograniczona tak, żeby nie pojawiły się na granicy mapy
+                int x = r.nextInt(kolumny-20)+10;
+                int y = r.nextInt(wiersze-20)+10;
+                boolean zaDaleko = true;
+
+                for (Mrowisko m : listaMrowisk) {
+                    int mx = m.getX();
+                    int my = m.getY();
+
+                    double dx = mx - x;
+                    double dy = my - y;
+                    double odleglosc = Math.sqrt(dx * dx + dy * dy);
+
+                    if (odleglosc < minimalnaOdleglosc) {
+                        zaDaleko = false;
+                        break;
+                    }
+                }
+
+                if (zaDaleko) {
+                    Mrowisko m = new Mrowisko(x, y, this);
+                    listaMrowisk.add(m);
+                    listaObiektow.add(m);
+                    znaleziono = true;
+                }
+
+                proby++;
+            }
+
+            if (!znaleziono) {
+                System.out.println(" Nie udalo się znalezc odpowiedniego miejsca dla mrowiska nr " + (i + 1));
+            }
         }
     }
 

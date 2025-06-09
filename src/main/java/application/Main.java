@@ -1,18 +1,11 @@
 package application;
 import javax.swing.*;
-import graphics.MapaPanel;
-import graphics.StartMenu;
-import graphics.TypObiektu;
-import graphics.ZliczarkaStatystyk;
+
+import graphics.*;
 import logic.mrowki.*;
-import logic.obiekty.Lisc;
-import logic.obiekty.Patyk;
+import logic.rozne.ZliczarkaStatystyk;
 
 import java.util.LinkedList;
-import java.util.Random;
-import java.util.Scanner;
-
-import static java.awt.SystemColor.menu;
 
 /**
  * Główna klasa aplikacji
@@ -31,7 +24,7 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
 
-            //============MENU==================================================
+            //============MENU ==================================================
             JFrame dummyFrame = new JFrame(); // Potrzebny do osadzenia StartMenu
             StartMenu menu = new StartMenu(dummyFrame);
             menu.setVisible(true);
@@ -52,7 +45,6 @@ public class Main {
             JFrame frame = new JFrame("Symulacja Mrowisk");
             MapaPanel mapa = new MapaPanel(liczbaMrowisk, czasMrowki, czasPrzedmioty, czasPrzedmioty,czasTrwania,choice);
 
-
             //Stworzenie info
             StringBuilder sb1 = new StringBuilder();
             ZliczarkaStatystyk.createFileDane(sb1);
@@ -68,6 +60,7 @@ public class Main {
             mapa.setOnSimulationEnd(() -> {
                 LinkedList<Mrowisko> mrowiska = mapa.getMrowiska();
                 ZliczarkaStatystyk.zliczStatystyki(mrowiska);
+
             });
 
             mapa.rozpocznijSymulacje(choice, czasTrwania);

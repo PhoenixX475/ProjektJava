@@ -1,7 +1,7 @@
-package graphics;
+package logic.rozne;
+import graphics.MapaPanel;
 import logic.mrowki.Mrowisko;
 
-import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class ZliczarkaStatystyk {
 
     public static void createFileDane(StringBuilder sb) {
         String dane = sb.toString();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./Dane"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./Dane.txt"))) {
 
             writer.write("[id, l.patykow, l.lisci, level, l.mrowek]\n");
             writer.write(dane);

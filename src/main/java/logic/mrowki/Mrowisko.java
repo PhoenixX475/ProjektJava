@@ -40,14 +40,20 @@ public class Mrowisko extends ObiektMapy {
         this.kolor = UnikalnyKolor();
     }
 
-
+    // Metody Get
     public int getLevel(){
         return level;
     }
-
     public int getAntCount(){
         return antCount;
     }
+    public int getX() {
+        return this.x;
+    }
+    public int getY() {
+        return this.y;
+    }
+
 
 
 
