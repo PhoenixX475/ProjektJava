@@ -1,0 +1,22 @@
+=== STATYSTYKI ===
+Mrowisko #1
+  Patyki: 10
+  Liscie: 0
+  Level: 3
+  Liczba mrowek: 6
+  Mrowki zabite przez mrowisko: 0
+
+Mrowisko #2
+  Patyki: 5
+  Liscie: 0
+  Level: 1
+  Liczba mrowek: 3
+  Mrowki zabite przez mrowisko: 0
+
+Mrowisko #3
+  Patyki: 0
+  Liscie: 0
+  Level: 1
+  Liczba mrowek: 3
+  Mrowki zabite przez mrowisko: 0
+
