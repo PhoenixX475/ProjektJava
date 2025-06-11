@@ -19,7 +19,7 @@ public class Robotnica extends Mrowka {
     // ============= POLA SPECYFICZNE DLA ROBOTNICY =============
     public ObiektMapy holding;      // Przedmiot aktualnie niesiony przez robotnicę
     private final Color kolor;      // Kolor identyfikacyjny robotnicy
-    public int leafCount;           // Liczba zebranych liści (do statystyk)
+    public int foodDelivered;       //Liczba lisci dostarczonych do mrowiska
 
     /**
      * Konstruktor robotnicy
@@ -66,6 +66,7 @@ public class Robotnica extends Mrowka {
                 // Aktualizacja zasobów mrowiska w zależności od typu przedmiotu
                 if (holding instanceof Lisc) {
                     myMrowisko.foodCount += Lisc.foodContribution; // Zwiększ jedzenie
+                    foodDelivered++;
                     myMrowisko.leafCount++;                       // Zwiększ licznik liści
                 } else if (holding instanceof Patyk) {
                     myMrowisko.stickCount += Patyk.upgradeContribution; // Zwiększ liczbę patyków

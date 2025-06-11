@@ -15,6 +15,7 @@ import java.util.List;
  * - interakcjami z otoczeniem
  */
 public class Mrowisko extends ObiektMapy {
+    public char[] foodDelivered;
     // ============= POLA DOTYCZĄCE STANU MROWISKA =============
     private int level;              // Aktualny poziom rozwoju mrowiska
     private int durability;         // Aktualna wytrzymałość (HP)
