@@ -1,24 +1,38 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlinx.kover' version "0.7.5"
+    id 'jacoco'
 }
-
-group = 'org.example'
-version = '1.0-SNAPSHOT'
-
 
 repositories {
     mavenCentral()
 }
 
-
-
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    jacoco {
+        enabled = true
+    }
 }
 
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+
+    classDirectories.setFrom(project.fileTree(dir: "${layout.buildDirectory.get()}/classes/java/main", include: ["**/*.class"]))
+    sourceDirectories.setFrom(project.fileTree("src/main/java"))
+    executionData.setFrom(project.fileTree(dir: "${layout.buildDirectory.get()}/jacoco", include: ["*.exec"]))
+}
