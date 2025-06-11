@@ -1,85 +1,78 @@
 package logic.mrowki;
 
 import graphics.MapaPanel;
-import logic.rozne.ObiektMapy;
-
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Zolnierz extends Mrowka{
+/**
+ * Klasa reprezentująca żołnierza w symulacji mrowiska.
+ * Specjalizuje się w walce z innymi mrówkami, posiada:
+ * - Większą wytrzymałość i siłę ataku niż robotnica
+ * - Możliwość zadawania obrażeń obszarowych
+ * - Większy rozmiar wizualny
+ * Dziedziczy po klasie Mrowka, rozszerzając jej funkcjonalność o mechanizmy walki.
+ */
+public class Zolnierz extends Mrowka {
 
-    public List<ObiektMapy> fights = new ArrayList<>();
-    private List<ObiektMapy> notFights = new ArrayList<>();
-    //public ObiektMapy fights = null;
-    private final Color kolor;
+    // ============= POLA SPECYFICZNE DLA ŻOŁNIERZA =============
+    public List<Mrowka> fights;    // Lista mrówek, z którymi aktualnie walczy
+    private final Color kolor;     // Kolor identyfikacyjny żołnierza
 
+    /**
+     * Konstruktor żołnierza
+     * @param x Pozycja startowa X
+     * @param y Pozycja startowa Y
+     * @param mrowisko Referencja do macierzystego mrowiska
+     * @param mapa Referencja do panelu mapy
+     * @param kolor Kolor bazowy (zostanie rozjaśniony dla żołnierza)
+     */
     public Zolnierz(int x, int y, Mrowisko mrowisko, MapaPanel mapa, Color kolor) {
-        super(30,8,x,y,mrowisko);
-        this.kolor = kolor.brighter().brighter();
+        super(30, 8, x, y, mrowisko); // Wysokie HP=30 i Damage=8
+        this.kolor = kolor.brighter().brighter(); // Rozjaśnienie koloru dla odróżnienia
     }
 
+    // ============= METODY DOTYCZĄCE WALKI =============
 
-    // Zolnierz zadaje obrażenia obszarowe
-    public void attackTarget() {
-        if(fights == null) return;
-        if(hp <= 0) return;
-        if(!onMap) return;
-        if(targeting == null) return;
-
-        for(ObiektMapy o : fights) {
-            if(o.onMap) {
-                    // Jeśli w zasięgu
-                    if (Math.abs(o.x - this.x) <= 5 && Math.abs(o.y - this.y) <= 5) {
-                        o.dealDamage(damage);
-
-                        if(o.hp <= 0) {
-                            notFights.add(o);
-                            o.onMap = false;
-                        }
-                    }
-                }
-                else {
-                    notFights.add(o);
-                }
+    /**
+     * Zadaje obrażenia obszarowe wszystkim mrówkom na liście walki
+     * @param dmg Ilość obrażeń do zadania każdej mrówce
+     */
+    @Override
+    public void dealDamage(double dmg) {
+        for(Mrowka m: fights) {
+            m.hp -= dmg; // Zadaj obrażenia każdej mrówce w zasięgu
+            if(m.hp <= 0) {
+                this.zabiteMrowki++; // Inkrementuj licznik zabitych mrówek
             }
-        for(ObiektMapy ob : notFights) {
-            if(fights.contains(ob)) fights.remove(ob);
         }
-        notFights.clear();
-
-
     }
 
+    // ============= METODY GRAFICZNE =============
+
+    /**
+     * Rysuje żołnierza na mapie (większy rozmiar niż robotnica)
+     * @param g Obiekt Graphics do rysowania
+     * @param rozmiarPola Rozmiar pojedynczego pola w pikselach
+     */
     @Override
     public void drawObject(Graphics g, int rozmiarPola) {
         g.setColor(kolor);
-        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola * 2, rozmiarPola * 2 );
+        // Żołnierz jest 2x większy od robotnicy
+        g.fillRect(x * rozmiarPola, y * rozmiarPola, rozmiarPola * 2, rozmiarPola * 2);
     }
 
+    // ============= GŁÓWNA METODA AKTUALIZUJĄCA =============
+
+    /**
+     * Aktualizuje stan żołnierza w każdej klatce symulacji
+     * Zarządza:
+     * - Ruchem żołnierza
+     * - Logiką walki
+     * - Interakcjami z wrogami
+     */
     @Override
-    public void update( ) {
-        // Ruch
-        if (targeting != null) {
-            moveToTarget();
-        } else {
-            randomMove();
-        }
-
-        // Sprawdź obiekty w zasięgu
-        ObiektMapy obj = checkArea(MapaPanel.listaObiektow);
-
-        // Jeśli napotkamy na mrówkę
-        if(targeting == null && ( obj instanceof Mrowka || obj instanceof Mrowisko ) ) {
-            targeting = obj;
-        }
-
-        if(targeting instanceof Mrowka || targeting instanceof Mrowisko) {
-            fights.add(targeting);
-            attackTarget();
-        }
-        die();
-        regeneration();
-
+    public void update() {
+        // Podstawowy losowy ruch (można rozszerzyć o śledzenie wrogów)
+        randomMove();
     }
 }

@@ -1,106 +1,68 @@
-package logic.rozne;
-import graphics.MapaPanel;
-import logic.mrowki.Mrowisko;
+package graphics;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-
 import java.util.Scanner;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import logic.mrowki.Mrowisko;
 
-
+/**
+ * Klasa odpowiedzialna za generowanie i zapis statystyk symulacji mrowisk
+ */
 public class ZliczarkaStatystyk {
 
-
+    /**
+     * Generuje i zapisuje statystyki dla listy mrowisk
+     * @param mrowiska Lista mrowisk do analizy
+     */
     public static void zliczStatystyki(List<Mrowisko> mrowiska) {
-
-
+        // Przygotowanie stringa z statystykami
         StringBuilder sb = new StringBuilder();
+        sb.append("=== STATYSTYKI ===\n");
 
-
-
-
-        sb.append("=== STATYSTYKI PODSUMOWANIE ===\n");
+        // Iteracja przez wszystkie mrowiska i zbieranie statystyk
         for (int i = 0; i < mrowiska.size(); i++) {
             Mrowisko m = mrowiska.get(i);
+
+            // Nagłówek mrowiska
             sb.append("Mrowisko #").append(i + 1).append("\n");
+
+            // Statystyki zasobów
             sb.append("  Patyki: ").append(m.stickCount).append("\n");
-            sb.append("  Liscie: ").append(m.foodDelivered).append("\n");
+            sb.append("  Liscie: ").append(m.leafCount).append("\n");
+
+            // Statystyki rozwoju
             sb.append("  Level: ").append(m.getLevel()).append("\n");
-            sb.append("  Liczba mrowek: ").append(m.getAntCount()).append("\n\n");
+            sb.append("  Liczba mrowek: ").append(m.getAntCount()).append("\n");
 
+            // Statystyki walk
+            long zabite = m.mrowki.stream().mapToLong(a -> a.zabiteMrowki).sum();
+            sb.append("  Mrowki zabite przez mrowisko: ").append(zabite).append("\n\n");
         }
+
         String statystyki = sb.toString();
-        System.out.println(statystyki);  // Wypisz w konsoli
+        System.out.println(statystyki);  // Wypisanie statystyk w konsoli
 
-
-        // Pobranie ścieżki zapisu od użytkownika
+        // Sekcja zapisu do pliku
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Podaj sciezke do zapisu pliku (bez rozszerzenia, np. C:\\\\sciezka\\\\plik): ");
+        System.out.print("Podaj ścieżkę do zapisu pliku (bez rozszerzenia, np. C:\\\\ścieżka\\\\plik): ");
         String userPath = scanner.nextLine();
 
-
-
-        // Dodanie znacznika czasu i rozszerzenia
+        // Generowanie unikalnej nazwy pliku z timestampem
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
         String filename = userPath + "_statystyki_symulacji_" + timestamp + ".txt";
 
-
-
-
-
+        // Zapis do pliku z obsługą błędów
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-
-
             writer.write(statystyki);
-
-
             System.out.println("Statystyki zapisane do pliku: " + filename);
-
-
         } catch (IOException e) {
-
-
-            System.err.println("Blad zapisu statystyk: " + e.getMessage());
-
-
-        }
-
-
-    }
-
-    public static void createFileDane(StringBuilder sb) {
-        String dane = sb.toString();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./Dane.txt"))) {
-
-            writer.write("[id, l.patykow, l.lisci, level, l.mrowek]\n");
-            writer.write(dane);
-        } catch (IOException e) {
-
-
-            System.err.println("Blad zapisu danych: " + e.getMessage());
-
-
-        }
-
-    }
-
-    public static void daneAdd(StringBuilder sb) {
-        List<Mrowisko> mrowiska = MapaPanel.listaMrowisk;
-        for (int i = 0; i < mrowiska.size(); i++) {
-            Mrowisko m = mrowiska.get(i);
-            sb.append("[").append(i + 1).append(",");
-            sb.append("").append(m.stickCount).append(",");
-            sb.append("").append(m.foodDelivered).append(",");
-            sb.append("").append(m.getLevel()).append(",");
-            sb.append("").append(m.getAntCount()).append("]\n");
-            createFileDane(sb);
+            System.err.println("Bład zapisu statystyk: " + e.getMessage());
+        } finally {
+            scanner.close(); // Zamknięcie skanera
         }
     }
-
-
 }

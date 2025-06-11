@@ -1,112 +1,129 @@
 package logic.mrowki;
+
 import graphics.MapaPanel;
 import logic.obiekty.*;
 import logic.rozne.ObiektMapy;
 
 import java.awt.*;
 
-import static java.lang.Math.abs;
-
-/**Robotnica jest odpowiedzialna za podnoszenie przedmiotów i przenoszenie ich do Mrowiska
- * W celu utrzymania go
+/**
+ * Klasa reprezentująca robotnicę w symulacji mrowiska.
+ * Robotnica specjalizuje się w:
+ * - Zbieraniu przedmiotów (liści i patyków)
+ * - Transportowaniu ich do mrowiska
+ * - Wspieraniu rozwoju kolonii
+ * Dziedziczy po klasie Mrowka, rozszerzając jej funkcjonalność o mechanizmy zbieractwa.
  */
-
-
 public class Robotnica extends Mrowka {
 
-    // Pola robotnicy
-    public ObiektMapy holding;
-    private final Color kolor;
+    // ============= POLA SPECYFICZNE DLA ROBOTNICY =============
+    public ObiektMapy holding;      // Przedmiot aktualnie niesiony przez robotnicę
+    private final Color kolor;      // Kolor identyfikacyjny robotnicy
+    public int leafCount;           // Liczba zebranych liści (do statystyk)
 
-
-    public Robotnica(int x, int y,Mrowisko mrowisko,MapaPanel mapa, Color kolor) {
-        super(10,3,x,y,mrowisko);
-        this.holding = null;
-        this.fights = null;
-        this.targeting = null;
-        this.kolor = kolor.brighter().brighter();
+    /**
+     * Konstruktor robotnicy
+     * @param x Pozycja startowa X
+     * @param y Pozycja startowa Y
+     * @param mrowisko Referencja do macierzystego mrowiska
+     * @param mapa Referencja do panelu mapy
+     * @param kolor Kolor bazowy (zostanie rozjaśniony dla robotnicy)
+     */
+    public Robotnica(int x, int y, Mrowisko mrowisko, MapaPanel mapa, Color kolor) {
+        super(10, 3, x, y, mrowisko); // HP=10, Damage=3
+        this.holding = null;          // Początkowo nie niesie żadnego przedmiotu
+        this.fights = null;           // Nie walczy (to główna różnica względem Żołnierza)
+        this.targeting = null;        // Brak początkowego celu
+        this.kolor = kolor.brighter().brighter(); // Rozjaśnienie koloru dla odróżnienia
     }
 
+    // ============= METODY DOTYCZĄCE ZBIERANIA PRZEDMIOTÓW =============
 
+    /**
+     * Podnosi przedmiot jeśli jest w tym samym polu co cel
+     * Po podniesieniu ustawia mrowisko jako nowy cel
+     */
     public void grab() {
+        // Sprawdzenie warunków podniesienia przedmiotu
         if (holding == null && targeting instanceof Przedmiot) {
             if (targeting.x == x && targeting.y == y) {
-                ((Przedmiot)targeting).onMap = false;
-                holding = targeting;
-                targeting = myMrowisko;
-                //System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
+                ((Przedmiot)targeting).onMap = false; // Oznacz przedmiot jako zebrany
+                holding = targeting;                   // Robotnica przejmuje przedmiot
+                targeting = myMrowisko;                // Ustaw mrowisko jako nowy cel
+                System.out.println(this + " podniosła przedmiot i wraca do mrowiska");
             }
         }
     }
 
-    public void returnToMrowisko() {
+    /**
+     * Oddaje przedmiot do mrowiska jeśli dotarła na miejsce
+     * Aktualizuje odpowiednio zasoby mrowiska w zależności od typu przedmiotu
+     */
+    public void returnPrzedmiotToMrowisko() {
+        // Sprawdzenie warunków oddania przedmiotu
         if (holding != null && targeting == myMrowisko) {
             if (x == myMrowisko.x && y == myMrowisko.y) {
+                // Aktualizacja zasobów mrowiska w zależności od typu przedmiotu
                 if (holding instanceof Lisc) {
-                    myMrowisko.foodCount += Lisc.foodContribution;
-                    myMrowisko.foodDelivered ++;
-
+                    myMrowisko.foodCount += Lisc.foodContribution; // Zwiększ jedzenie
+                    myMrowisko.leafCount++;                       // Zwiększ licznik liści
                 } else if (holding instanceof Patyk) {
-                    myMrowisko.stickCount += Patyk.upgradeContribution;
+                    myMrowisko.stickCount += Patyk.upgradeContribution; // Zwiększ liczbę patyków
                 }
-                holding = null;
-                targeting = null;
+
+                holding = null;    // Zwolnij przedmiot
+                targeting = null;  // Wyczyść cel
+                System.out.println("Mrowka dodała przedmiot do mrowiska");
             }
         }
     }
 
+    // ============= METODY GRAFICZNE =============
 
+    /**
+     * Rysuje robotnicę na mapie
+     * @param g Obiekt Graphics do rysowania
+     * @param rozmiarPola Rozmiar pojedynczego pola w pikselach
+     */
     @Override
-    public void drawObject(Graphics g, int rozmiarPola ) {
+    public void drawObject(Graphics g, int rozmiarPola) {
         g.setColor(kolor);
-        g.fillRect(x * rozmiarPola,y * rozmiarPola, rozmiarPola, rozmiarPola );
+        g.fillRect(x * rozmiarPola, y * rozmiarPola, rozmiarPola, rozmiarPola);
     }
 
+    // ============= GŁÓWNA METODA AKTUALIZUJĄCA =============
+
+    /**
+     * Aktualizuje stan robotnicy w każdej klatce symulacji
+     * Zarządza:
+     * - Ruchem robotnicy
+     * - Logiką zbierania przedmiotów
+     * - Interakcjami z otoczeniem
+     */
     @Override
     public void update() {
-
-        // Ruch
+        // Logika ruchu
         if (targeting != null) {
-            moveToTarget();
+            moveToTarget();  // Poruszaj się w kierunku celu
         } else {
-            randomMove();
+            randomMove();    // Poruszaj się losowo
         }
 
-        // Sprawdź obiekty w zasięgu
+        // Wyszukiwanie przedmiotów w pobliżu
         ObiektMapy obj = checkArea(MapaPanel.listaObiektow);
 
-        // Jeśli nic nie trzymamy i nie mamy celu – targetuj przedmiot
+        // Logika wyboru celu
         if (holding == null && targeting == null && obj instanceof Przedmiot) {
-            targeting = obj;
+            targeting = obj;  // Znaleziono przedmiot - ustaw jako cel
         }
 
-        // Jeśli trzymamy przedmiot i nie mamy celu – wracamy do mrowiska
-        if (holding != null) {
-            targeting = myMrowisko;
+        // Logika powrotu do mrowiska
+        if (holding != null && targeting == null) {
+            targeting = myMrowisko; // Wracaj z przedmiotem do mrowiska
         }
 
-        // Jeśli napotkamy na mrówkę
-        if(holding == null && targeting == null && ( obj instanceof Mrowka || obj instanceof Mrowisko)) {
-            targeting = obj;
-        }
-
-        if(targeting instanceof Mrowka || targeting instanceof  Mrowisko) {
-            fights = targeting;
-            attackTarget();
-        }
-
-
-
-
-
-
-        die();
-        regeneration();
-        grab();
-        returnToMrowisko();
-
-
-
+        // Wykonanie akcji
+        grab();                   // Próba podniesienia przedmiotu
+        returnPrzedmiotToMrowisko(); // Próba oddania przedmiotu
     }
-
 }
