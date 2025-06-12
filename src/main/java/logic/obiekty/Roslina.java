@@ -16,7 +16,7 @@
 //
 //
 //    // Kontruktor domyślny
-//    public Roslina() {
+//    public Roslina(). {
 //        this.durability = 10;
 //    }
 //}
