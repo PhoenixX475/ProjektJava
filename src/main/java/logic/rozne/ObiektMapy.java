@@ -3,78 +3,101 @@ package logic.rozne;
 import java.awt.*;
 
 /**
- * Abstrakcyjna klasa bazowa reprezentująca wszystkie obiekty znajdujące się na mapie symulacji.
- * Definiuje podstawowe właściwości i zachowania wspólne dla wszystkich obiektów w symulacji.
+ * Klasa bazowa dla wszystkich obiektów na mapie.
+ * Przechowuje podstawowe informacje o położeniu, rozmiarze,
+ * stanie życia oraz metodach do rysowania i aktualizacji stanu obiektu.
  */
 public abstract class ObiektMapy {
-    // ============= POLA KLASY =============
 
-    /**
-     * Współrzędne obiektu na mapie (lewy górny róg)
-     */
+    // Pozycja obiektu na mapie (w jednostkach siatki)
     public int x, y;
 
-    /**
-     * Rozmiary obiektu (domyślnie 1x1)
-     */
+    // Wymiary obiektu - szerokość i wysokość (domyślnie 1x1)
     public int width, height = 1;
 
-    /**
-     * Flaga określająca czy obiekt jest aktualnie na mapie
-     */
+    // Informacja czy obiekt jest aktywny na mapie (żyje/istnieje)
     public boolean onMap;
 
-    // ============= KONSTRUKTORY =============
+    // Aktualne punkty życia obiektu
+    public int hp;
+
+    // Maksymalne punkty życia obiektu
+    public int maxHp;
 
     /**
-     * Konstruktor podstawowy dla obiektów 1x1
-     * @param x Współrzędna X obiektu
-     * @param y Współrzędna Y obiektu
+     * Konstruktor dla żywych obiektów o rozmiarze 1x1,
+     * inicjalizuje pozycję, max hp i aktualne hp,
+     * oraz ustawia obiekt jako aktywny na mapie.
+     * @param x pozycja X
+     * @param y pozycja Y
+     * @param maxHp maksymalne punkty życia
+     */
+    public ObiektMapy(int x, int y, int maxHp) {
+        this.x = x;
+        this.y = y;
+        this.maxHp = maxHp;
+        this.hp = maxHp;
+        this.onMap = true;
+    }
+
+    /**
+     * Konstruktor dla obiektów większych niż 1x1 (np. Mrowisko),
+     * pozwala ustawić dodatkowo szerokość i wysokość.
+     * @param x pozycja X
+     * @param y pozycja Y
+     * @param maxHp maksymalne punkty życia
+     * @param width szerokość obiektu
+     * @param height wysokość obiektu
+     */
+    public ObiektMapy(int x, int y, int maxHp, int width, int height) {
+        this(x, y, maxHp);
+        this.width = width;
+        this.height = height;
+        this.onMap = true;
+    }
+
+    /**
+     * Konstruktor dla przedmiotów, które nie mają punktów życia,
+     * ustawia tylko pozycję i aktywność na mapie.
+     * @param x pozycja X
+     * @param y pozycja Y
      */
     public ObiektMapy(int x, int y) {
         this.x = x;
         this.y = y;
-        this.onMap = true; // Obiekt domyślnie jest umieszczany na mapie
+        this.onMap = true;
     }
 
     /**
-     * Konstruktor dla obiektów o większych rozmiarach (np. mrowiska)
-     * @param x Współrzędna X obiektu
-     * @param y Współrzędna Y obiektu
-     * @param width Szerokość obiektu
-     * @param height Wysokość obiektu
+     * Zadaj obrażenia obiektowi, zmniejszając jego punkty życia.
+     * @param dmg ilość zadanych obrażeń
      */
-    public ObiektMapy(int x, int y, int width, int height) {
-        this(x, y); // Wywołanie konstruktora podstawowego
-        this.width = width;
-        this.height = height;
+    public void dealDamage(int dmg) {
+        hp -= dmg;
     }
 
-    // ============= METODY =============
-
     /**
-     * Sprawdza kolizję obiektu z podanymi współrzędnymi
-     * @param dx Współrzędna X punktu do sprawdzenia
-     * @param dy Współrzędna Y punktu do sprawdzenia
-     * @return true jeśli punkt (dx,dy) znajduje się wewnątrz obiektu
+     * Sprawdza czy obiekt powinien "umrzeć" (hp <= 0)
+     * i ustawia go jako nieaktywny na mapie.
      */
-    public boolean occupied(int dx, int dy) {
-        // Sprawdzenie czy punkt (dx,dy) znajduje się w obszarze zajmowanym przez obiekt
-        return dx >= x && dx < x + width && dy >= y && dy < y + height;
+    public void die() {
+        if (hp <= 0) {
+            onMap = false;
+        }
     }
 
-    // ============= METODY ABSTRAKCYJNE =============
-
     /**
-     * Metoda abstrakcyjna odpowiedzialna za rysowanie obiektu na mapie
-     * @param g Obiekt Graphics używany do rysowania
-     * @param rozmiarPola Rozmiar pojedynczego pola mapy w pikselach
+     * Abstrakcyjna metoda do rysowania obiektu na mapie.
+     * Musi zostać zaimplementowana w klasach dziedziczących.
+     * @param g obiekt graficzny do rysowania
+     * @param rozmiarPola wielkość pojedynczego pola na mapie
      */
     public abstract void drawObject(Graphics g, int rozmiarPola);
 
     /**
-     * Metoda abstrakcyjna odpowiedzialna za aktualizację stanu obiektu
-     * Wywoływana w każdej klatce symulacji
+     * Abstrakcyjna metoda aktualizacji stanu obiektu,
+     * np. ruchu, regeneracji czy innych zachowań.
+     * Musi zostać zaimplementowana w klasach dziedziczących.
      */
     public abstract void update();
 }

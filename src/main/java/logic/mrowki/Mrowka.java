@@ -1,125 +1,145 @@
 package logic.mrowki;
-
-import logic.rozne.Coordinates;
 import logic.rozne.ObiektMapy;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
 /**
- * Abstrakcyjna klasa bazowa reprezentująca mrówkę w symulacji.
- * Zawiera podstawowe mechanizmy wspólne dla wszystkich typów mrówek:
- * - poruszanie się
- * - walkę
- * - interakcje z otoczeniem
+ * Abstrakcyjna klasa bazowa reprezentująca mrówkę.
+ * Definiuje podstawowe pola i zachowania wspólne dla wszystkich typów mrówek,
+ * takie jak ruch, atak, sprawdzanie otoczenia oraz życie/śmierć.
  */
-public abstract class Mrowka extends ObiektMapy {
-    // ============= POLA DOTYCZĄCE STATYSTYK MRÓWKI =============
-    protected int hp;               // Punkty życia mrówki (0 = śmierć)
-    protected double damage;        // Siła ataku mrówki
-    public Mrowka fights;          // Referencja do mrówki, z którą aktualnie walczy
-    public Mrowisko myMrowisko;    // Referencja do macierzystego mrowiska
-    public int zabiteMrowki = 0;   // Licznik zabitych mrówek przez tę mrówkę
+public abstract class Mrowka extends ObiektMapy implements IMrowka {
+    // Obrażenia zadawane przez mrówkę przy ataku
+    protected int damage;
+    public ObiektMapy fights;   // obecny przeciwnik, z którym mrówka walczy
+    public Mrowisko myMrowisko; // mrowisko, do którego należy mrówka
 
-    // ============= POLA DOTYCZĄCE POZYCJI I RUCHU =============
-    public Coordinates coordinates; // Aktualne współrzędne mrówki
-    public Random randomMoveX = new Random(); // Generator losowy dla ruchu w osi X
-    public Random randomMoveY = new Random(); // Generator losowy dla ruchu w osi Y
-    public ObiektMapy targeting;   // Cel, do którego mrówka zmierza
+    // Generatory losowych ruchów mrówki
+    public Random randomMoveX = new Random();
+    public Random randomMoveY = new Random();
+
+    public int zabiteMrowki = 0; // liczba zabitych mrówek przez tę mrówkę
+
+    public ObiektMapy targeting; // obecny cel mrówki (do którego się porusza)
 
     /**
-     * Konstruktor bazowy mrówki
-     * @param hp Punkty życia początkowe
-     * @param damage Obrażenia zadawane przez mrówkę
-     * @param x Pozycja startowa X
-     * @param y Pozycja startowa Y
-     * @param mrowisko Referencja do macierzystego mrowiska
+     * Konstruktor mrówki.
+     * @param hp - życie mrówki
+     * @param damage - obrażenia mrówki
+     * @param x - pozycja X na mapie
+     * @param y - pozycja Y na mapie
+     * @param mrowisko - mrowisko, do którego należy mrówka
      */
-    public Mrowka(int hp, double damage, int x, int y, Mrowisko mrowisko) {
-        super(x, y);
-        this.hp = hp;
+    public Mrowka(int hp, int damage, int x, int y, Mrowisko mrowisko) {
+        super(x, y, hp);
         this.damage = damage;
         this.fights = null;
         this.myMrowisko = mrowisko;
         this.targeting = null;
     }
 
-    // ============= METODY DOTYCZĄCE WALKI =============
-
     /**
-     * Zwraca wartość obrażeń zadawanych przez mrówkę
-     * @return Wartość obrażeń
-     */
-    public double getDamage() {
-        return damage;
-    }
-
-    /**
-     * Zadaje obrażenia mrówce
-     * @param dmg Ilość obrażeń do zadania
-     */
-    public void dealDamage(double dmg) {
-        hp -= dmg;
-    }
-
-    // ============= METODY DOTYCZĄCE RUCHU =============
-
-    /**
-     * Losowy ruch mrówki po mapie (gdy nie ma celu)
-     * Ogranicza ruch do granic mapy (0-100)
+     * Losowe poruszanie się mrówki,
+     * przesuwa ją o -1, 0 lub +1 na osi X i Y, jeśli nie ma aktualnego celu.
      */
     public void randomMove() {
         if (targeting == null) {
-            x += randomMoveX.nextInt(3) - 1; // -1, 0 lub 1
-            y += randomMoveY.nextInt(3) - 1; // -1, 0 lub 1
+            x += randomMoveX.nextInt(3) - 1; // ruch w osi X: -1, 0 lub +1
+            y += randomMoveY.nextInt(3) - 1; // ruch w osi Y: -1, 0 lub +1
 
-            // Zabezpieczenie przed wyjściem poza mapę
-            x = Math.max(1, Math.min(x, 99));
-            y = Math.max(1, Math.min(y, 99));
+            // ograniczenie ruchu mrówki w granicach planszy 0-100
+            if (x < 0) x = 1;
+            if (x > 100) x = 99;
+            if (y < 0) y = 1;
+            if (y > 100) y = 99;
         }
     }
 
     /**
-     * Porusza mrówkę w kierunku aktualnego celu
-     * Wykonuje tylko jeden krok w danym kierunku
+     * Porusza mrówkę o 1 krok w kierunku celu (targeting).
+     * Jeśli cel nie istnieje lub nie jest na mapie, cel zostaje usunięty.
      */
     public void moveToTarget() {
         if (targeting == null) return;
+        if (!targeting.onMap) {
+            targeting = null;
+            return;
+        }
 
-        int dx = Integer.compare(targeting.x, this.x); // -1, 0 lub 1
-        int dy = Integer.compare(targeting.y, this.y); // -1, 0 lub 1
+        // Obliczamy kierunek ruchu względem celu (-1, 0 lub +1)
+        int dx = Integer.compare(targeting.x, this.x);
+        int dy = Integer.compare(targeting.y, this.y);
 
+        // Przesuwamy mrówkę o 1 krok w osi X i Y w stronę celu
         this.x += dx;
         this.y += dy;
     }
 
-    // ============= METODY DOTYCZĄCE INTERAKCJI =============
-
     /**
-     * Sprawdza obszar wokół mrówki w poszukiwaniu obiektów
-     * @param listaObiektow Lista wszystkich obiektów na mapie
-     * @return Znaleziony obiekt w zasięgu lub null
+     * Sprawdza czy w otoczeniu mrówki (w promieniu 5 pól) znajdują się inne obiekty,
+     * które mogą być celem (np. wrogie mrówki lub inne obiekty na mapie).
+     * Ignoruje siebie, własne mrowisko oraz przyjazne mrówki.
+     * @param listaObiektow lista wszystkich obiektów na mapie
+     * @return znaleziony obiekt w zasięgu lub null jeśli brak
      */
     public ObiektMapy checkArea(LinkedList<ObiektMapy> listaObiektow) {
         for (ObiektMapy obj : listaObiektow) {
-            // Pomijanie siebie samej i obiektów już zebranych
-            if (obj == this || !obj.onMap || obj == this.myMrowisko) continue;
+            if (obj == this) continue;               // pomijamy siebie
+            if (!obj.onMap) continue;                // pomijamy obiekty usunięte z mapy
+            if (obj == this.myMrowisko) continue;   // pomijamy własne mrowisko
+            if (this.myMrowisko.mrowki.contains(obj)) continue; // pomijamy przyjazne mrówki
 
-            // Sprawdzenie czy obiekt jest w zasięgu 5x5 pól
+            // Sprawdzamy, czy obiekt jest w zasięgu 5 jednostek w osi X i Y
             if (Math.abs(obj.x - this.x) <= 5 && Math.abs(obj.y - this.y) <= 5) {
-                return obj;
+                return obj;  // zwracamy pierwszy znaleziony obiekt w zasięgu
             }
         }
-        return null;
+        return null; // brak obiektu w zasięgu
     }
 
-    // ============= GETTERY =============
+    /**
+     * Atakuje aktualny cel (fights) jeśli jest w zasięgu (3 jednostki),
+     * zadaje obrażenia i oznacza cel jako usunięty jeśli HP <= 0.
+     */
+    public void attackTarget() {
+        if (fights == null) return;
+        if (hp <= 0) return;     // jeśli mrówka martwa, nie atakuje
+        if (!onMap) return;      // jeśli mrówka nie jest na mapie, nie atakuje
+        if (targeting == null) return;
+
+        // Sprawdzamy czy cel jest w zasięgu ataku (3 jednostki)
+        if (Math.abs(targeting.x - this.x) <= 3 && Math.abs(targeting.y - this.y) <= 3) {
+            fights.dealDamage(damage); // zadajemy obrażenia celowi
+            if (fights.hp <= 0) {      // jeśli cel martwy, usuwamy go z mapy
+                fights.onMap = false;
+            }
+        }
+    }
 
     /**
-     * Zwraca aktualną ilość punktów życia mrówki
-     * @return Wartość HP
+     * Metoda wywoływana gdy mrówka umiera.
+     * Oznacza mrówkę jako nieobecną na mapie i zmniejsza licznik mrówek w mrowisku.
      */
-    public int getHp() {
-        return hp;
+    @Override
+    public void die() {
+        if (hp <= 0) {
+            onMap = false;    // mrówka znika z mapy
+            targeting = null; // zerujemy cel
+            fights = null;    // zerujemy przeciwnika
+            if (myMrowisko.antCount > 0) myMrowisko.antCount--;  // zmniejszamy licznik mrówek w mrowisku
+        }
+        // Jeśli mrowisko nie istnieje lub jest martwe, mrówka znika z mapy
+        if (myMrowisko == null || myMrowisko.hp <= 0) onMap = false;
+    }
+
+    /**
+     * Regeneracja życia mrówki, jeśli nie walczy i nie ma maksymalnego HP.
+     */
+    protected void regeneration() {
+        if (fights == null && hp < maxHp) {
+            hp++;  // powolne leczenie mrówki
+        }
     }
 }

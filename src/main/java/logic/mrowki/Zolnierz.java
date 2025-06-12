@@ -1,78 +1,117 @@
 package logic.mrowki;
 
 import graphics.MapaPanel;
+import logic.rozne.ObiektMapy;
+
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Klasa reprezentująca żołnierza w symulacji mrowiska.
- * Specjalizuje się w walce z innymi mrówkami, posiada:
- * - Większą wytrzymałość i siłę ataku niż robotnica
- * - Możliwość zadawania obrażeń obszarowych
- * - Większy rozmiar wizualny
- * Dziedziczy po klasie Mrowka, rozszerzając jej funkcjonalność o mechanizmy walki.
+ * Klasa reprezentująca żołnierza - mrówkę specjalizującą się w walce,
+ * zadającą obrażenia obszarowe wokół siebie.
  */
 public class Zolnierz extends Mrowka {
 
-    // ============= POLA SPECYFICZNE DLA ŻOŁNIERZA =============
-    public List<Mrowka> fights;    // Lista mrówek, z którymi aktualnie walczy
-    private final Color kolor;     // Kolor identyfikacyjny żołnierza
+    // Lista obiektów, które są aktualnie atakowane (w zasięgu walki)
+    public List<ObiektMapy> fights = new ArrayList<>();
+
+    // Lista obiektów, które powinny zostać usunięte z listy walki (np. zabite)
+    private List<ObiektMapy> notFights = new ArrayList<>();
+
+    // Kolor żołnierza do rysowania (jaśniejszy od koloru mrowiska)
+    private final Color kolor;
 
     /**
-     * Konstruktor żołnierza
-     * @param x Pozycja startowa X
-     * @param y Pozycja startowa Y
-     * @param mrowisko Referencja do macierzystego mrowiska
-     * @param mapa Referencja do panelu mapy
-     * @param kolor Kolor bazowy (zostanie rozjaśniony dla żołnierza)
+     * Konstruktor żołnierza.
+     * @param x pozycja X
+     * @param y pozycja Y
+     * @param mrowisko mrowisko, do którego należy żołnierz
+     * @param mapa panel mapy (potrzebny do interakcji)
+     * @param kolor kolor żołnierza (bazowany na kolorze mrowiska)
      */
     public Zolnierz(int x, int y, Mrowisko mrowisko, MapaPanel mapa, Color kolor) {
-        super(30, 8, x, y, mrowisko); // Wysokie HP=30 i Damage=8
-        this.kolor = kolor.brighter().brighter(); // Rozjaśnienie koloru dla odróżnienia
+        super(30, 8, x, y, mrowisko);
+        this.kolor = kolor.brighter().brighter();
     }
 
-    // ============= METODY DOTYCZĄCE WALKI =============
-
     /**
-     * Zadaje obrażenia obszarowe wszystkim mrówkom na liście walki
-     * @param dmg Ilość obrażeń do zadania każdej mrówce
+     * Metoda atakująca wszystkie cele z listy fights znajdujące się w zasięgu (5 pól).
+     * Zadaje obrażenia obszarowe i usuwa obiekty zabite lub już niedostępne z listy.
      */
-    @Override
-    public void dealDamage(double dmg) {
-        for(Mrowka m: fights) {
-            m.hp -= dmg; // Zadaj obrażenia każdej mrówce w zasięgu
-            if(m.hp <= 0) {
-                this.zabiteMrowki++; // Inkrementuj licznik zabitych mrówek
+    public void attackTarget() {
+        if (fights == null) return;
+        if (hp <= 0) return;
+        if (!onMap) return;
+        if (targeting == null) return;
+
+        for (ObiektMapy o : fights) {
+            if (o.onMap) {
+                // Jeśli obiekt jest w zasięgu 5 jednostek w poziomie i pionie
+                if (Math.abs(o.x - this.x) <= 5 && Math.abs(o.y - this.y) <= 5) {
+                    o.dealDamage(damage);  // zadaj obrażenia
+
+                    // Jeśli obiekt został zabity, oznacz do usunięcia z listy walki
+                    if (o.hp <= 0) {
+                        notFights.add(o);
+                        o.onMap = false;
+                    }
+                }
+            } else {
+                // Obiekt już nie jest na mapie - dodaj do usunięcia
+                notFights.add(o);
             }
         }
+
+        // Usuń z listy walki obiekty, które już nie są aktywne
+        for (ObiektMapy ob : notFights) {
+            fights.remove(ob);
+        }
+        notFights.clear();
     }
 
-    // ============= METODY GRAFICZNE =============
-
     /**
-     * Rysuje żołnierza na mapie (większy rozmiar niż robotnica)
-     * @param g Obiekt Graphics do rysowania
-     * @param rozmiarPola Rozmiar pojedynczego pola w pikselach
+     * Rysowanie żołnierza na mapie jako większy kwadrat w określonym kolorze.
+     * @param g obiekt graficzny do rysowania
+     * @param rozmiarPola wielkość pola na mapie
      */
     @Override
     public void drawObject(Graphics g, int rozmiarPola) {
         g.setColor(kolor);
-        // Żołnierz jest 2x większy od robotnicy
         g.fillRect(x * rozmiarPola, y * rozmiarPola, rozmiarPola * 2, rozmiarPola * 2);
     }
 
-    // ============= GŁÓWNA METODA AKTUALIZUJĄCA =============
-
     /**
-     * Aktualizuje stan żołnierza w każdej klatce symulacji
-     * Zarządza:
-     * - Ruchem żołnierza
-     * - Logiką walki
-     * - Interakcjami z wrogami
+     * Aktualizacja stanu żołnierza wywoływana co klatkę gry.
+     * Odpowiada za ruch, wykrywanie celów i atakowanie.
      */
     @Override
     public void update() {
-        // Podstawowy losowy ruch (można rozszerzyć o śledzenie wrogów)
-        randomMove();
+        // Ruch do celu, jeśli jest, w przeciwnym razie ruch losowy
+        if (targeting != null) {
+            moveToTarget();
+        } else {
+            randomMove();
+        }
+
+        // Sprawdzenie obiektów w zasięgu
+        ObiektMapy obj = checkArea(MapaPanel.listaObiektow);
+
+        // Jeśli nie mamy celu i napotkaliśmy mrówkę lub mrowisko - ustawiamy cel
+        if (targeting == null && (obj instanceof Mrowka || obj instanceof Mrowisko)) {
+            targeting = obj;
+        }
+
+        // Jeśli celem jest mrówka lub mrowisko - dodajemy do listy celów walki i atakujemy
+        if (targeting instanceof Mrowka || targeting instanceof Mrowisko) {
+            fights.add(targeting);
+            attackTarget();
+        }
+
+        // Sprawdź czy żołnierz nie umarł
+        die();
+
+        // Regeneracja życia jeśli nie walczy
+        regeneration();
     }
 }

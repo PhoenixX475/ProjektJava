@@ -1,12 +1,10 @@
 package application;
-import javax.swing.*;
 
+import javax.swing.*;
 import graphics.*;
 import logic.mrowki.*;
 import logic.rozne.ZliczarkaStatystyk;
-
 import java.util.LinkedList;
-
 /**
  * Główna klasa aplikacji
  * tutaj jest wywoływana symulacja
@@ -50,7 +48,7 @@ public class Main {
             ZliczarkaStatystyk.createFileDane(sb1);
 
             Timer timeInfo = new Timer(250, e -> {
-               ZliczarkaStatystyk.daneAdd(sb1);
+                ZliczarkaStatystyk.daneAdd(sb1);
             });
             timeInfo.start();
 
