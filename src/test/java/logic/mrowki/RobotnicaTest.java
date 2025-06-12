@@ -2,6 +2,7 @@ package logic.mrowki;
 
 import graphics.MapaPanel;
 import logic.obiekty.Lisc;
+import logic.obiekty.Patyk;
 import logic.rozne.ObiektMapy;
 import org.junit.jupiter.api.Test;
 
@@ -40,4 +41,6 @@ public class RobotnicaTest {
         assertEquals(obj,r1);
 
     }
+
+
 }
