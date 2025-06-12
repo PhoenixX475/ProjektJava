@@ -10,10 +10,6 @@ import java.util.LinkedList;
  * tutaj jest wywoływana symulacja
  * */
 
-/**
- * Wszystkie obiekty zapisz w 2d tablicy i to wyświetlaj na mapę
- * Żeby sprawdzić czy coś jest blisko to z tego weź*/
-
 
 public class Main {
     public static void main(String[] args) {
